@@ -10,7 +10,6 @@ Based on idea of https://github.com/dreikanter/wp2md
 ```$ export GIT_SSH="C:\Program Files (x86)\PuTTY\plink.exe"```
 or in Powershell:
 ```[Environment]::SetEnvironmentVariable("GIT_SSH", "C:\Program Files (x86)\PuTTY\plink.exe", "User")```
-C:\Program Files (x86)\PuTTY\plink.exe
 
 4. Set upstream 
 ```git branch -u github/master```

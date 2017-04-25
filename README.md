@@ -8,7 +8,7 @@ Based on idea of https://github.com/dreikanter/wp2md
 2. [SSH to Server via GUI to get around "Store key in cache?" error](https://stackoverflow.com/questions/33240137/git-clone-pull-continually-freezing-at-store-key-in-cache)
 3. Set the env Var GIT_SSH:
 
-	```export GIT_SSH="C:\Program Files (x86)\PuTTY\plink.exe"
+	`export GIT_SSH="C:\Program Files (x86)\PuTTY\plink.exe`
 
 or in Powershell:
 

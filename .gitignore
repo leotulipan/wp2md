@@ -1,0 +1,7 @@
+.vscode/
+node_modules/
+wp2md/
+*.xml
+test*
+2017*test*
+wp2md.js

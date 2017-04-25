@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "xml-parser": "registry:dt/xml-parser#1.2.1+20160428043022"
+  }
+}

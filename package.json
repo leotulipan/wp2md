@@ -1,0 +1,27 @@
+{
+  "name": "wp2md",
+  "version": "0.0.1",
+  "description": "Wordpress XML to Markdown Typescript",
+  "main": "wp2md.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^7.0.13",
+    "typescript": "^2.2.2",
+    "typescript-watcher": "0.0.4",
+    "typings": "^2.1.1",
+    "xml2js": "^0.4.17"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Leonard Tulipan",
+    "email": "Leo@LeoTulipan.at",
+    "url": "http://LeoTulipan.at/"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leotulipan/wp2md"
+  }
+}

@@ -24,10 +24,9 @@ class wpParser {
         'item': [
             'title',
             'link',
-            'creator',
+            'dc:creator',
             'description',
             'post_id',
-            'post_date',
             'post_date_gmt',
             'comment_status',
             'post_name',
@@ -76,17 +75,28 @@ class wpParser {
     // result["rss"]["channel"][0]["item"][0]["category"]
     //
     // [ { _: 'Blog', '$': { domain: 'category', nicename: 'blog' } },
+    //   { _: 'Ernährung',
+    //     '$': { domain: 'category', nicename: 'ernaehrung' } },
     //   { _: 'Fett', '$': { domain: 'post_tag', nicename: 'fett' } },
     //   { _: 'Omega-6 Fett',
     //     '$': { domain: 'post_tag', nicename: 'omega-6' } } ]
     parse2js() {
+        /**
+         * the function that parses the Wordpress XML export file
+         * and outputs to json
+         */
 
         let parseString = require('xml2js').parseString;
         // https://github.com/Leonidas-from-XIV/node-xml2js
         parseString(this.xmlFile, function (err, result) {
             console.dir(
-                (result["rss"]["channel"][0]["item"][0]["category"])
+
+                result["rss"]["channel"][0]["item"][0]["dc:creator"]
             )
+            //  meta data category, tags
+            // console.dir(
+            //     (result["rss"]["channel"][0]["item"][0]["category"])
+            // )
         });
     }
 

@@ -46,12 +46,10 @@ We created the repo locally and created one remotely
 Prerequisites:
 
     npm install
+    (npm install -g typescript)
+    (npm install -g ts-node) only for https://stackoverflow.com/questions/33535879/how-to-run-typescript-files-from-command-line for ts-node option
 
-# Running the code
-
-See also https://stackoverflow.com/questions/33535879/how-to-run-typescript-files-from-command-line for ts-node option
-
-## Compile (and watch) Typescript:
+## Compile (and watch) Typescript (in a git bash)
 
     tsc -w wp2md.ts
 

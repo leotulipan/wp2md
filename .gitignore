@@ -3,5 +3,6 @@ node_modules/
 wp2md/
 *.xml
 test*
+!test.xml
 2017*test*
 wp2md.js

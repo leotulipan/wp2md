@@ -95,10 +95,12 @@ class wpParser {
             (err, result) => {
                 for (let i of parser.WHAT2SAVE['item']) {
                     // for (let i of ["creator"]) {
-                    console.log(i)
-                    console.dir(
-                        result["rss"]["channel"][0]["item"][0][i]
-                    )
+                    if (result["rss"]["channel"][0]["item"][0][i]) {
+                        console.log(i)
+                        console.dir(
+                            result["rss"]["channel"][0]["item"][0][i]
+                        )
+                    }
                 }
 
                 //  meta data category, tags

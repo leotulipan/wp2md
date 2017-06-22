@@ -7,7 +7,15 @@ class wpParser {
 
     // # XML elements to save (starred ones are additional fields
     // # generated during export data processing)
-    WHAT2SAVE = {
+
+    // let w: object = {
+    // channel: ['title', 'description'],
+    // item: ['post_id', 'post_name'],
+    // }
+    // console.dir(w['item'])
+
+
+    WHAT2SAVE: object = {
         'channel': [
             'title',
             'description',
@@ -56,8 +64,9 @@ class wpParser {
             'comment_type',
             // # 'comment_parent',
             // # 'comment_user_id',
-        ]
+        ],
     }
+
 
     // # Wordpress RSS items to public - static page header fields mapping#(undefined names will remain unchanged)
     FIELD_MAP = {
@@ -70,16 +79,6 @@ class wpParser {
 
     }
 
-    // Categories and Tags look like this:
-    //
-    // result["rss"]["channel"][0]["item"][0]["category"]
-    //
-    // [ { _: 'Blog', '$': { domain: 'category', nicename: 'blog' } },
-    //   { _: 'Ernährung',
-    //     '$': { domain: 'category', nicename: 'ernaehrung' } },
-    //   { _: 'Fett', '$': { domain: 'post_tag', nicename: 'fett' } },
-    //   { _: 'Omega-6 Fett',
-    //     '$': { domain: 'post_tag', nicename: 'omega-6' } } ]
     parse2js() {
         /**
          * the function that parses the Wordpress XML export file
@@ -89,14 +88,25 @@ class wpParser {
         let parseString = require('xml2js').parseString;
         // https://github.com/Leonidas-from-XIV/node-xml2js
         parseString(this.xmlFile, function (err, result) {
-            console.dir(
 
-                result["rss"]["channel"][0]["item"][0]["dc:creator"]
-            )
+            console.log(parser.WHAT2SAVE['item'])
+            // console.dir(
+            //     result["rss"]["channel"][0]["item"][0]["dc:creator"]
+            // )
             //  meta data category, tags
             // console.dir(
             //     (result["rss"]["channel"][0]["item"][0]["category"])
             // )
+            // Categories and Tags look like this:
+            //
+            // result["rss"]["channel"][0]["item"][0]["category"]
+            //
+            // [ { _: 'Blog', '$': { domain: 'category', nicename: 'blog' } },
+            //   { _: 'Ernährung',
+            //     '$': { domain: 'category', nicename: 'ernaehrung' } },
+            //   { _: 'Fett', '$': { domain: 'post_tag', nicename: 'fett' } },
+            //   { _: 'Omega-6 Fett',
+            //     '$': { domain: 'post_tag', nicename: 'omega-6' } } ]
         });
     }
 

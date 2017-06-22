@@ -85,13 +85,14 @@ class wpParser {
          * and outputs to json
          */
 
+        // https://github.com/Leonidas-from-XIV/node-xml2js
         let parseString = require('xml2js').parseString
         let processors = require('xml2js/lib/processors')
-        // https://github.com/Leonidas-from-XIV/node-xml2js
+
         parseString(this.xmlFile, {
                 tagNameProcessors: [processors.stripPrefix],
             },
-            function (err, result) {
+            (err, result) => {
                 for (let i of parser.WHAT2SAVE['item']) {
                     // for (let i of ["creator"]) {
                     console.log(i)

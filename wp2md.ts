@@ -100,23 +100,31 @@ class wpParser {
                 tagNameProcessors: [processors.stripPrefix],
             },
             (err, result) => {
-                let final: Taxonomies[];
-                // for (let i of parser.WHAT2SAVE['item']) {
-                for (let i of ["category"]) {
+                var item: Array < any > = []
+                for (let i of parser.WHAT2SAVE['item']) {
+                    // for (let i of ["category"]) {
                     // only if not undefined, as some elements may not exist on all items
                     if (result["rss"]["channel"][0]["item"][0][i]) {
-                        // console.log(i)
-                        console.dir(
-                            result["rss"]["channel"][0]["item"][0][i].map((value) => {
-                                let tax: Taxonomies
-                                tax = {
-                                    taxonomy: value['$']['domain'],
-                                    name: value['_'],
-                                    nicename: value['$']['nicename'],
+                        console.log("Processing: " + i)
+
+                        if (i === "category") {
+                            item.push(result["rss"]["channel"][0]["item"][0][i].map((value) => {
+                                return {
+                                    id: "taxonomy",
+                                    content: < Taxonomies > {
+                                        taxonomy: value['$']['domain'],
+                                        name: value['_'],
+                                        nicename: value['$']['nicename'],
+                                    }
                                 }
-                                return tax
+                            }))
+                        } else {
+                            item.push({
+                                id: i,
+                                content: result["rss"]["channel"][0]["item"][0][i][0]
                             })
-                        )
+                        }
+
                     }
                 }
 
@@ -157,7 +165,7 @@ class wpParser {
                 //         name: "Omega-6 Fett",
                 //     }
                 // ]
-                // console.dir(final)
+                console.dir(item)
             });
     }
 

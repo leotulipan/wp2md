@@ -2,6 +2,11 @@
 // npm install "@types/node" --save-dev
 import * as fs from "fs"
 
+type Taxonomies = {
+    taxonomy: string,
+    nicename: string,
+    name: string,
+}
 
 class wpParser {
 
@@ -68,6 +73,8 @@ class wpParser {
     }
 
 
+
+
     // # Wordpress RSS items to public - static page header fields mapping#(undefined names will remain unchanged)
     FIELD_MAP = {
         'creator': 'author',
@@ -93,12 +100,22 @@ class wpParser {
                 tagNameProcessors: [processors.stripPrefix],
             },
             (err, result) => {
-                for (let i of parser.WHAT2SAVE['item']) {
-                    // for (let i of ["creator"]) {
+                let final: Taxonomies[];
+                // for (let i of parser.WHAT2SAVE['item']) {
+                for (let i of ["category"]) {
+                    // only if not undefined, as some elements may not exist on all items
                     if (result["rss"]["channel"][0]["item"][0][i]) {
-                        console.log(i)
+                        // console.log(i)
                         console.dir(
-                            result["rss"]["channel"][0]["item"][0][i]
+                            result["rss"]["channel"][0]["item"][0][i].map((value) => {
+                                let tax: Taxonomies
+                                tax = {
+                                    taxonomy: value['$']['domain'],
+                                    name: value['_'],
+                                    nicename: value['$']['nicename'],
+                                }
+                                return tax
+                            })
                         )
                     }
                 }
@@ -117,6 +134,30 @@ class wpParser {
                 //   { _: 'Fett', '$': { domain: 'post_tag', nicename: 'fett' } },
                 //   { _: 'Omega-6 Fett',
                 //     '$': { domain: 'post_tag', nicename: 'omega-6' } } ]
+
+
+                // let final: Taxonomies[] = [{
+                //         taxonomy: 'categories',
+                //         nicename: 'ernaehrung',
+                //         name: 'Ernährung',
+                //     },
+                //     {
+                //         taxonomy: 'categories',
+                //         nicename: 'blog',
+                //         name: 'Blog',
+                //     },
+                //     {
+                //         taxonomy: 'tags',
+                //         nicename: 'fett',
+                //         name: "Fett",
+                //     },
+                //     {
+                //         taxonomy: 'tags',
+                //         nicename: 'omega-6',
+                //         name: "Omega-6 Fett",
+                //     }
+                // ]
+                // console.dir(final)
             });
     }
 

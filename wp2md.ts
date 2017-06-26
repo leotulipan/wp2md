@@ -2,12 +2,6 @@
 // npm install "@types/node" --save-dev
 import * as fs from "fs"
 
-type Taxonomies = {
-    taxonomy: string,
-    nicename: string,
-    name: string,
-}
-
 class wpParser {
 
     // # XML elements to save (starred ones are additional fields
@@ -37,23 +31,23 @@ class wpParser {
         'item': [
             'title',
             'link',
-            'creator',
-            'description',
-            'post_id',
-            'post_date_gmt',
-            'comment_status',
-            'post_name',
-            'status',
-            'post_type',
-            'excerpt',
-            'content', //# Generated: item content
-            'comments', //# Generated: comments list
             'category', //# we want multiple <category domain="post_tag"
+            'comments', //# Generated: comments list
+            'dc:creator',
+            'wp:post_id',
+            'wp:post_date_gmt',
+            'wp:comment_status',
+            'wp:post_name',
+            'wp:status',
+            'wp:post_type',
+            'wp:post_parent',
+            'wp:is_sticky',
+            'excerpt:encoded',
+            'content:encoded', //# Generated: item content
+            // 'description', // seems to always be empty 
             // # 'guid',
-            // # 'is_sticky',
             // # 'menu_order',
             // # 'ping_status',
-            // # 'post_parent',
             // # 'post_password',
         ],
         'comment': [
@@ -86,6 +80,10 @@ class wpParser {
 
     }
 
+    stripWPPrefix(tag: string) {
+        return tag
+    }
+
     parse2js() {
         /**
          * the function that parses the Wordpress XML export file
@@ -97,7 +95,10 @@ class wpParser {
         let processors = require('xml2js/lib/processors')
 
         parseString(this.xmlFile, {
-                tagNameProcessors: [processors.stripPrefix],
+                // we are not using strpPrefix b/c content:encoded and excerpt:encoded would yield
+                // "encoded"
+                // tagNameProcessors: [processors.stripPrefix],
+                tagNameProcessors: [this.stripWPPrefix]
             },
             (err, result) => {
                 var item: Array < any > = []
@@ -105,17 +106,12 @@ class wpParser {
                     // for (let i of ["category"]) {
                     // only if not undefined, as some elements may not exist on all items
                     if (result["rss"]["channel"][0]["item"][0][i]) {
-                        console.log("Processing: " + i)
-
+                        // console.log("Processing: " + i)
                         if (i === "category") {
                             item.push(result["rss"]["channel"][0]["item"][0][i].map((value) => {
                                 return {
-                                    // id: "taxonomy",
-                                    // content: < Taxonomies > {
                                     [value['$']['domain']]: value['$']['nicename'],
                                     name: value['_'],
-                                    // nicename: ,
-
                                 }
                             }))
                         } else {
@@ -127,44 +123,22 @@ class wpParser {
                     }
                 }
 
-                //  meta data category, tags
-                // console.dir(
-                //     (result["rss"]["channel"][0]["item"][0]["category"])
-                // )
-                // Categories and Tags look like this:
-                //
-                // result["rss"]["channel"][0]["item"][0]["category"]
-                //
-                // [ { _: 'Blog', '$': { domain: 'category', nicename: 'blog' } },
-                //   { _: 'Ernährung',
-                //     '$': { domain: 'category', nicename: 'ernaehrung' } },
-                //   { _: 'Fett', '$': { domain: 'post_tag', nicename: 'fett' } },
-                //   { _: 'Omega-6 Fett',
-                //     '$': { domain: 'post_tag', nicename: 'omega-6' } } ]
-
-
-                // let final: Taxonomies[] = [{
-                //         taxonomy: 'categories',
-                //         nicename: 'ernaehrung',
-                //         name: 'Ernährung',
-                //     },
-                //     {
-                //         taxonomy: 'categories',
-                //         nicename: 'blog',
-                //         name: 'Blog',
-                //     },
-                //     {
-                //         taxonomy: 'tags',
-                //         nicename: 'fett',
-                //         name: "Fett",
-                //     },
-                //     {
-                //         taxonomy: 'tags',
-                //         nicename: 'omega-6',
-                //         name: "Omega-6 Fett",
-                //     }
-                // ]
+                // [ { title: 'Margarineproduzenten geben auf: Butter ist gesünder' },
+                //   { link: 'https://paleolowcarb.de/margarineproduzenten-geben-auf-butter-ist-gesuender/' },
+                //   { creator: 'leonard' },
+                //   { description: '' },
+                //   { post_id: '548' },
+                //   { post_date_gmt: '2014-02-09 08:00:27' },
+                //   { comment_status: 'closed' },
+                //   { post_name: 'margarineproduzenten-geben-auf-butter-ist-gesuender' },
+                //   { status: 'publish' },
+                //   { post_type: 'post' },
+                //   [ { category: 'blog', name: 'Blog' },
+                //     { category: 'ernaehrung', name: 'Ernährung' },
+                //     { post_tag: 'fett', name: 'Fett' },
+                //     { post_tag: 'omega-6', name: 'Omega-6 Fett' } ] ]
                 console.dir(item)
+                //console.dir(result["rss"]["channel"][0]["item"][0])
             });
     }
 

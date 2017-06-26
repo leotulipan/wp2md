@@ -33,17 +33,28 @@ class wpParser {
             'link',
             'category', //# we want multiple <category domain="post_tag"
             'comments', //# Generated: comments list
-            'dc:creator',
-            'wp:post_id',
-            'wp:post_date_gmt',
-            'wp:comment_status',
-            'wp:post_name',
-            'wp:status',
-            'wp:post_type',
-            'wp:post_parent',
-            'wp:is_sticky',
-            'excerpt:encoded',
-            'content:encoded', //# Generated: item content
+            'creator',
+            'post_id',
+            'post_date_gmt',
+            'comment_status',
+            'post_name',
+            'status',
+            'post_type',
+            'post_parent',
+            'is_sticky',
+            'excerpt',
+            'content', //# Generated: item content          
+            // 'dc:creator',
+            // 'wp:post_id',
+            // 'wp:post_date_gmt',
+            // 'wp:comment_status',
+            // 'wp:post_name',
+            // 'wp:status',
+            // 'wp:post_type',
+            // 'wp:post_parent',
+            // 'wp:is_sticky',
+            // 'excerpt:encoded',
+            // 'content:encoded', //# Generated: item content
             // 'description', // seems to always be empty 
             // # 'guid',
             // # 'menu_order',
@@ -81,7 +92,17 @@ class wpParser {
     }
 
     stripWPPrefix(tag: string) {
-        return tag
+        let splitTag = tag.split(':')
+        if (splitTag[0] == "wp" || splitTag[0] == "dc") {
+            //  starts with wp: or dc: e.g. dc:creator
+            return splitTag[1]
+        } else if (splitTag[1] == "encoded") {
+            // ends with :encoded e.g. content:encoded
+            return splitTag[0]
+        } else {
+            // all other cases return original
+            return tag
+        }
     }
 
     parse2js() {

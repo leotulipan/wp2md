@@ -110,18 +110,17 @@ class wpParser {
                         if (i === "category") {
                             item.push(result["rss"]["channel"][0]["item"][0][i].map((value) => {
                                 return {
-                                    id: "taxonomy",
-                                    content: < Taxonomies > {
-                                        taxonomy: value['$']['domain'],
-                                        name: value['_'],
-                                        nicename: value['$']['nicename'],
-                                    }
+                                    // id: "taxonomy",
+                                    // content: < Taxonomies > {
+                                    [value['$']['domain']]: value['$']['nicename'],
+                                    name: value['_'],
+                                    // nicename: ,
+
                                 }
                             }))
                         } else {
                             item.push({
-                                id: i,
-                                content: result["rss"]["channel"][0]["item"][0][i][0]
+                                [i]: result["rss"]["channel"][0]["item"][0][i][0]
                             })
                         }
 

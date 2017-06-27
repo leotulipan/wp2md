@@ -6,6 +6,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^7.0.13",
+    "to-markdown": "^3.0.4",
     "typescript": "^2.2.2",
     "typescript-watcher": "0.0.4",
     "typings": "^2.1.1",

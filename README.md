@@ -7,12 +7,7 @@ Based on idea of https://github.com/dreikanter/wp2md
 I am still playing around with the code and copying the working features from wp2md.py
 
 # Next Steps
-- loop WHAT2SAVE['item'] to extract all those meta data
 
-- Get item data ("dump_item") from first item
-    - meta data (see WHAT2SAVE array) title, link, author, description, post_id, created, post_date_gmt, comment_status, post_name, status, post_type
-    - nicely format meta data category, tags
-    - content
 - convert content to markdown
 - save item as json
 - loop through all items

@@ -1,6 +1,7 @@
 // https://stackoverflow.com/questions/37260901/how-to-find-module-fs-in-ms-code-with-typescript
 // npm install "@types/node" --save-dev
 import * as fs from "fs"
+import * as toMarkdown from "to-markdown"
 
 class wpParser {
 
@@ -77,9 +78,6 @@ class wpParser {
         ],
     }
 
-
-
-
     // # Wordpress RSS items to public - static page header fields mapping#(undefined names will remain unchanged)
     FIELD_MAP = {
         'creator': 'author',
@@ -113,12 +111,13 @@ class wpParser {
 
         // https://github.com/Leonidas-from-XIV/node-xml2js
         let parseString = require('xml2js').parseString
-        let processors = require('xml2js/lib/processors')
+
+        // let processors = require('xml2js/lib/processors')
+        // we are not using strpPrefix b/c content:encoded and excerpt:encoded would yield
+        // "encoded"
+        // tagNameProcessors: [processors.stripPrefix],
 
         parseString(this.xmlFile, {
-                // we are not using strpPrefix b/c content:encoded and excerpt:encoded would yield
-                // "encoded"
-                // tagNameProcessors: [processors.stripPrefix],
                 tagNameProcessors: [this.stripWPPrefix]
             },
             (err, result) => {
@@ -135,12 +134,15 @@ class wpParser {
                                     name: value['_'],
                                 }
                             }))
+                        } else if (i === "content") {
+                            item.push({
+                                [i]: toMarkdown(result["rss"]["channel"][0]["item"][0][i][0])
+                            })
                         } else {
                             item.push({
                                 [i]: result["rss"]["channel"][0]["item"][0][i][0]
                             })
                         }
-
                     }
                 }
 

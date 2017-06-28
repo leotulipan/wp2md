@@ -36,7 +36,7 @@ class wpParser {
             'comments', //# Generated: comments list
             'creator',
             'post_id',
-            'post_date_gmt',
+            'post_date',
             'comment_status',
             'post_name',
             'status',

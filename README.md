@@ -8,8 +8,12 @@ I am still playing around with the code and copying the working features from wp
 
 # Next Steps
 
-- convert content to markdown
-- save item as json
+- turn item into an interface to JSON.stringify correctly. See test.json file
+    http://choly.ca/post/typescript-json/
+- json2yaml the front matter 
+    - final format https://jekyllrb.com/docs/frontmatter/
+    - npm  https://www.npmjs.com/package/json2yaml
+    - online converter https://www.json2yaml.com/
 - loop through all items
 - [Command Line Arguments and Interface](https://github.com/vilic/clime)
 - Take Filename, output & date arguments

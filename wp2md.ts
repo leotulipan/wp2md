@@ -3,6 +3,34 @@
 import * as fs from "fs"
 import * as toMarkdown from "to-markdown"
 
+// generated with http://json2ts.com/
+declare module WpNamespace {
+
+    export interface wpTaxonomy {
+        type ? : string;
+        nice_name ? : string;
+        name ? : string;
+    }
+
+    export interface wpItem {
+        title ? : string;
+        link ? : string;
+        taxonomies ? : wpTaxonomy[];
+        creator ? : string;
+        post_id ? : number;
+        post_date ? : string;
+        comment_status ? : string;
+        post_name ? : string;
+        status ? : string;
+        post_type ? : string;
+        post_parent ? : number;
+        is_sticky ? : number;
+        excerpt ? : string;
+        content ? : string;
+    }
+
+}
+
 class wpParser {
 
     // # XML elements to save (starred ones are additional fields
@@ -121,30 +149,28 @@ class wpParser {
                 tagNameProcessors: [this.stripWPPrefix]
             },
             (err, result) => {
-                var item: Array < any > = []
+                var item: WpNamespace.wpItem = {};
                 for (let i of parser.WHAT2SAVE['item']) {
                     // for (let i of ["category"]) {
                     // only if not undefined, as some elements may not exist on all items
                     if (result["rss"]["channel"][0]["item"][0][i]) {
                         // console.log("Processing: " + i)
                         if (i === "category") {
-                            item.push(result["rss"]["channel"][0]["item"][0][i].map((value) => {
-                                return {
-                                    [value['$']['domain']]: value['$']['nicename'],
-                                    name: value['_'],
-                                }
-                            }))
+                            // item.push(result["rss"]["channel"][0]["item"][0][i].map((value) => {
+                            //     return {
+                            //         [value['$']['domain']]: value['$']['nicename'],
+                            //         name: value['_'],
+                            //     }
+                            // }))
                         } else if (i === "content") {
-                            item.push({
-                                [i]: toMarkdown(result["rss"]["channel"][0]["item"][0][i][0])
-                            })
+                            item.content = toMarkdown(result["rss"]["channel"][0]["item"][0][i][0])
+
                         } else {
-                            item.push({
-                                [i]: result["rss"]["channel"][0]["item"][0][i][0]
-                            })
+                            item[i] = result["rss"]["channel"][0]["item"][0][i][0]
                         }
                     }
                 }
+
 
                 // [ { title: 'Margarineproduzenten geben auf: Butter ist gesünder' },
                 //   { link: 'https://paleolowcarb.de/margarineproduzenten-geben-auf-butter-ist-gesuender/' },
@@ -160,7 +186,8 @@ class wpParser {
                 //     { category: 'ernaehrung', name: 'Ernährung' },
                 //     { post_tag: 'fett', name: 'Fett' },
                 //     { post_tag: 'omega-6', name: 'Omega-6 Fett' } ] ]
-                console.dir(item)
+                item.content = "Cleared for debug purposes"
+                console.log(item)
                 //console.dir(result["rss"]["channel"][0]["item"][0])
             });
     }

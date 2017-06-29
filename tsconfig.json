@@ -4,11 +4,16 @@
         "module": "commonjs",
         "target": "es5",
         "noImplicitAny": false,
-        "sourceMap": false
+        "sourceMap": true,
+        "watch": true,
+        "outDir": "dist"
     },
     "exclude": [
         "node_modules",
         "dist",
         "build"
+    ],
+    "files": [
+        "wp2md.ts"
     ]
 }

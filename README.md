@@ -55,11 +55,12 @@ Prerequisites:
     npm install
     (npm install -g typescript)
     (npm install -g ts-node) only for https://stackoverflow.com/questions/33535879/how-to-run-typescript-files-from-command-line for ts-node option
+    ( tsc --init ) if no tsconfig.json is present
 
 ## Compile (and watch) Typescript (in a git bash)
 
-    tsc -w wp2md.ts
+    tsc
 
 ## Run:
 
-    node wp2md    
+    node dist/wp2md    

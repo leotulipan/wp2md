@@ -8,8 +8,11 @@ I am still playing around with the code and copying the working features from wp
 
 # Next Steps
 
-- turn item into an interface to JSON.stringify correctly. See test.json file
+- make taxonomies work in item interface again
+- final item output should = test.json
+    https://www.typescriptlang.org/docs/handbook/interfaces.html
     http://choly.ca/post/typescript-json/
+    https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
 - json2yaml the front matter 
     - final format https://jekyllrb.com/docs/frontmatter/
     - npm  https://www.npmjs.com/package/json2yaml

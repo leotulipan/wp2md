@@ -2,6 +2,7 @@
 // npm install "@types/node" --save-dev
 import * as fs from "fs"
 import * as toMarkdown from "to-markdown"
+import * as YAML from "json2yaml"
 
 /**
  * Interface for the frontmatter object/json
@@ -34,32 +35,6 @@ declare module WpNamespace {
 
 }
 
-/**
- *  
-  Returns an ordered Json stringified
- via https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
-*/
-function orderedItemJsonStringify(o) {
-    return JSON.stringify(Object.keys(o).sort((n1, n2) => {
-        let sortOrder = {
-            title: 0,
-            post_name: 1,
-            post_id: 2,
-            link: 3,
-            creator: 4,
-            post_date: 5,
-            post_type: 6,
-            status: 7,
-            comment_status: 8,
-            post_parent: 9,
-            is_sticky: 10,
-            excerpt: 11,
-            taxonomies: 12,
-            content: 13
-        }
-        return sortOrder[n1] - sortOrder[n2]
-    }).reduce((r, k) => (r[k] = o[k], r), {}));
-}
 class wpParser {
 
     // # XML elements to save (starred ones are additional fields
@@ -219,8 +194,31 @@ class wpParser {
                 //     { post_tag: 'fett', name: 'Fett' },
                 //     { post_tag: 'omega-6', name: 'Omega-6 Fett' } ] ]
                 item.content = "Cleared for debug purposes"
-                // console.dir(JSON.stringify(item))
-                console.dir(orderedItemJsonStringify(item))
+
+                // Sort function syntax via
+                // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
+                // added custom sort function
+                item = Object.keys(item).sort((n1, n2) => {
+                    let sortOrder = {
+                        title: 0,
+                        post_name: 1,
+                        post_id: 2,
+                        link: 3,
+                        creator: 4,
+                        post_date: 5,
+                        post_type: 6,
+                        status: 7,
+                        comment_status: 8,
+                        post_parent: 9,
+                        is_sticky: 10,
+                        excerpt: 11,
+                        taxonomies: 12,
+                        content: 13
+                    }
+                    return sortOrder[n1] - sortOrder[n2]
+                }).reduce((r, k) => (r[k] = item[k], r), {})
+
+                console.log(YAML.stringify(item))
             });
     }
 }

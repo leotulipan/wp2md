@@ -4,32 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // npm install "@types/node" --save-dev
 var fs = require("fs");
 var toMarkdown = require("to-markdown");
-/**
- *
-  Returns an ordered Json stringified
- via https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
-*/
-function orderedItemJsonStringify(o) {
-    return JSON.stringify(Object.keys(o).sort(function (n1, n2) {
-        var sortOrder = {
-            title: 0,
-            post_name: 1,
-            post_id: 2,
-            link: 3,
-            creator: 4,
-            post_date: 5,
-            post_type: 6,
-            status: 7,
-            comment_status: 8,
-            post_parent: 9,
-            is_sticky: 10,
-            excerpt: 11,
-            taxonomies: 12,
-            content: 13
-        };
-        return sortOrder[n1] - sortOrder[n2];
-    }).reduce(function (r, k) { return (r[k] = o[k], r); }, {}));
-}
+var YAML = require("json2yaml");
 var wpParser = (function () {
     function wpParser(xmlFile) {
         this.xmlFile = xmlFile;
@@ -158,8 +133,29 @@ var wpParser = (function () {
             //     { post_tag: 'fett', name: 'Fett' },
             //     { post_tag: 'omega-6', name: 'Omega-6 Fett' } ] ]
             item.content = "Cleared for debug purposes";
-            // console.dir(JSON.stringify(item))
-            console.dir(orderedItemJsonStringify(item));
+            // Sort function syntax via
+            // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
+            // added custom sort function
+            item = Object.keys(item).sort(function (n1, n2) {
+                var sortOrder = {
+                    title: 0,
+                    post_name: 1,
+                    post_id: 2,
+                    link: 3,
+                    creator: 4,
+                    post_date: 5,
+                    post_type: 6,
+                    status: 7,
+                    comment_status: 8,
+                    post_parent: 9,
+                    is_sticky: 10,
+                    excerpt: 11,
+                    taxonomies: 12,
+                    content: 13
+                };
+                return sortOrder[n1] - sortOrder[n2];
+            }).reduce(function (r, k) { return (r[k] = item[k], r); }, {});
+            console.log(YAML.stringify(item));
         });
     };
     return wpParser;

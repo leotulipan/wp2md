@@ -1,3 +1,5 @@
+var DEBUG: boolean = true
+
 // https://stackoverflow.com/questions/37260901/how-to-find-module-fs-in-ms-code-with-typescript
 // npm install "@types/node" --save-dev
 import * as fs from "fs"
@@ -37,16 +39,9 @@ declare module WpNamespace {
 
 class wpParser {
 
-    // # XML elements to save (starred ones are additional fields
-    // # generated during export data processing)
-
-    // let w: object = {
-    // channel: ['title', 'description'],
-    // item: ['post_id', 'post_name'],
-    // }
-    // console.dir(w['item'])
-
-
+    /**
+     * XML elements to save
+     */
     WHAT2SAVE: object = {
         'channel': [
             'title',
@@ -76,18 +71,7 @@ class wpParser {
             'post_parent',
             'is_sticky',
             'excerpt',
-            'content', //# Generated: item content          
-            // 'dc:creator',
-            // 'wp:post_id',
-            // 'wp:post_date_gmt',
-            // 'wp:comment_status',
-            // 'wp:post_name',
-            // 'wp:status',
-            // 'wp:post_type',
-            // 'wp:post_parent',
-            // 'wp:is_sticky',
-            // 'excerpt:encoded',
-            // 'content:encoded', //# Generated: item content
+            'content',
             // 'description', // seems to always be empty 
             // # 'guid',
             // # 'menu_order',
@@ -110,7 +94,8 @@ class wpParser {
         ],
     }
 
-    // # Wordpress RSS items to public - static page header fields mapping#(undefined names will remain unchanged)
+    // Wordpress RSS items to public - static page header fields mapping
+    //(undefined names will remain unchanged)
     FIELD_MAP = {
         'creator': 'author',
         'post_date': 'created',
@@ -121,6 +106,15 @@ class wpParser {
 
     }
 
+    /**
+     * removes prefix or postfix
+     * prefixes: wp: or dc:
+     * postfix: :encoded
+     * planned on using stripPrefix, but it doesn't handle postfix
+     *  // let processors = require('xml2js/lib/processors')
+     *  // tagNameProcessors: [processors.stripPrefix]
+     * @param tag the xml tag that needs to be parsed
+     */
     stripWPPrefix(tag: string) {
         let splitTag = tag.split(':')
         if (splitTag[0] == "wp" || splitTag[0] == "dc") {
@@ -135,19 +129,14 @@ class wpParser {
         }
     }
 
+    /**
+     * the function that parses the Wordpress XML export file
+     * and outputs to json
+     */
     parse2js() {
-        /**
-         * the function that parses the Wordpress XML export file
-         * and outputs to json
-         */
 
         // https://github.com/Leonidas-from-XIV/node-xml2js
         let parseString = require('xml2js').parseString
-
-        // let processors = require('xml2js/lib/processors')
-        // we are not using strpPrefix b/c content:encoded and excerpt:encoded would yield
-        // "encoded"
-        // tagNameProcessors: [processors.stripPrefix],
 
         parseString(this.xmlFile, {
                 tagNameProcessors: [this.stripWPPrefix]
@@ -178,22 +167,7 @@ class wpParser {
                     }
                 }
 
-
-                // [ { title: 'Margarineproduzenten geben auf: Butter ist gesünder' },
-                //   { link: 'https://paleolowcarb.de/margarineproduzenten-geben-auf-butter-ist-gesuender/' },
-                //   { creator: 'leonard' },
-                //   { description: '' },
-                //   { post_id: '548' },
-                //   { post_date_gmt: '2014-02-09 08:00:27' },
-                //   { comment_status: 'closed' },
-                //   { post_name: 'margarineproduzenten-geben-auf-butter-ist-gesuender' },
-                //   { status: 'publish' },
-                //   { post_type: 'post' },
-                //   [ { category: 'blog', name: 'Blog' },
-                //     { category: 'ernaehrung', name: 'Ernährung' },
-                //     { post_tag: 'fett', name: 'Fett' },
-                //     { post_tag: 'omega-6', name: 'Omega-6 Fett' } ] ]
-                item.content = "Cleared for debug purposes"
+                if (DEBUG) item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
 
                 // Sort function syntax via
                 // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
@@ -218,7 +192,7 @@ class wpParser {
                     return sortOrder[n1] - sortOrder[n2]
                 }).reduce((r, k) => (r[k] = item[k], r), {})
 
-                console.log(YAML.stringify(item))
+                if (DEBUG) console.log(YAML.stringify(item))
             });
     }
 }

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var DEBUG = true;
 // https://stackoverflow.com/questions/37260901/how-to-find-module-fs-in-ms-code-with-typescript
 // npm install "@types/node" --save-dev
 var fs = require("fs");
@@ -8,13 +9,9 @@ var YAML = require("json2yaml");
 var wpParser = (function () {
     function wpParser(xmlFile) {
         this.xmlFile = xmlFile;
-        // # XML elements to save (starred ones are additional fields
-        // # generated during export data processing)
-        // let w: object = {
-        // channel: ['title', 'description'],
-        // item: ['post_id', 'post_name'],
-        // }
-        // console.dir(w['item'])
+        /**
+         * XML elements to save
+         */
         this.WHAT2SAVE = {
             'channel': [
                 'title',
@@ -57,13 +54,23 @@ var wpParser = (function () {
                 'comment_type',
             ],
         };
-        // # Wordpress RSS items to public - static page header fields mapping#(undefined names will remain unchanged)
+        // Wordpress RSS items to public - static page header fields mapping
+        //(undefined names will remain unchanged)
         this.FIELD_MAP = {
             'creator': 'author',
             'post_date': 'created',
             'post_date_gmt': 'created_gmt',
         };
     }
+    /**
+     * removes prefix or postfix
+     * prefixes: wp: or dc:
+     * postfix: :encoded
+     * planned on using stripPrefix, but it doesn't handle postfix
+     *  // let processors = require('xml2js/lib/processors')
+     *  // tagNameProcessors: [processors.stripPrefix]
+     * @param tag the xml tag that needs to be parsed
+     */
     wpParser.prototype.stripWPPrefix = function (tag) {
         var splitTag = tag.split(':');
         if (splitTag[0] == "wp" || splitTag[0] == "dc") {
@@ -79,17 +86,13 @@ var wpParser = (function () {
             return tag;
         }
     };
+    /**
+     * the function that parses the Wordpress XML export file
+     * and outputs to json
+     */
     wpParser.prototype.parse2js = function () {
-        /**
-         * the function that parses the Wordpress XML export file
-         * and outputs to json
-         */
         // https://github.com/Leonidas-from-XIV/node-xml2js
         var parseString = require('xml2js').parseString;
-        // let processors = require('xml2js/lib/processors')
-        // we are not using strpPrefix b/c content:encoded and excerpt:encoded would yield
-        // "encoded"
-        // tagNameProcessors: [processors.stripPrefix],
         parseString(this.xmlFile, {
             tagNameProcessors: [this.stripWPPrefix]
         }, function (err, result) {
@@ -118,21 +121,8 @@ var wpParser = (function () {
                     }
                 }
             }
-            // [ { title: 'Margarineproduzenten geben auf: Butter ist gesünder' },
-            //   { link: 'https://paleolowcarb.de/margarineproduzenten-geben-auf-butter-ist-gesuender/' },
-            //   { creator: 'leonard' },
-            //   { description: '' },
-            //   { post_id: '548' },
-            //   { post_date_gmt: '2014-02-09 08:00:27' },
-            //   { comment_status: 'closed' },
-            //   { post_name: 'margarineproduzenten-geben-auf-butter-ist-gesuender' },
-            //   { status: 'publish' },
-            //   { post_type: 'post' },
-            //   [ { category: 'blog', name: 'Blog' },
-            //     { category: 'ernaehrung', name: 'Ernährung' },
-            //     { post_tag: 'fett', name: 'Fett' },
-            //     { post_tag: 'omega-6', name: 'Omega-6 Fett' } ] ]
-            item.content = "Cleared for debug purposes";
+            if (DEBUG)
+                item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>";
             // Sort function syntax via
             // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
             // added custom sort function
@@ -155,7 +145,8 @@ var wpParser = (function () {
                 };
                 return sortOrder[n1] - sortOrder[n2];
             }).reduce(function (r, k) { return (r[k] = item[k], r); }, {});
-            console.log(YAML.stringify(item));
+            if (DEBUG)
+                console.log(YAML.stringify(item));
         });
     };
     return wpParser;

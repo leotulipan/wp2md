@@ -17,6 +17,7 @@ I am still playing around with the code and copying the working features from wp
 - Take Filename, output & date arguments
 - Get Channel data ("def dump_channel" in the python module => index.md) 
 - throw error when more than one channel
+- make debugging work in vcode https://stackoverflow.com/questions/31169259/how-to-debug-typescript-files-in-visual-studio-code
 
 # Setup 
 

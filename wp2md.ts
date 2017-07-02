@@ -13,8 +13,8 @@ declare module WpNamespace {
     }
 
     export interface wpItem {
-        title ? : string;
-        link ? : string;
+        "title" ? : string;
+        "link" ? : string;
         taxonomies ? : wpTaxonomy[];
         creator ? : string;
         post_id ? : number;
@@ -149,19 +149,22 @@ class wpParser {
                 tagNameProcessors: [this.stripWPPrefix]
             },
             (err, result) => {
-                var item: WpNamespace.wpItem = {};
+                var item: WpNamespace.wpItem = {}
+                item.taxonomies = []
+
                 for (let i of parser.WHAT2SAVE['item']) {
                     // for (let i of ["category"]) {
                     // only if not undefined, as some elements may not exist on all items
                     if (result["rss"]["channel"][0]["item"][0][i]) {
                         // console.log("Processing: " + i)
                         if (i === "category") {
-                            // item.push(result["rss"]["channel"][0]["item"][0][i].map((value) => {
-                            //     return {
-                            //         [value['$']['domain']]: value['$']['nicename'],
-                            //         name: value['_'],
-                            //     }
-                            // }))
+                            item.taxonomies = result["rss"]["channel"][0]["item"][0][i].map((current_tag) => {
+                                return <WpNamespace.wpTaxonomy > {
+                                    type: current_tag.$.domain,
+                                    name: current_tag._,
+                                    nice_name: current_tag.$.nicename
+                                }
+                            })
                         } else if (i === "content") {
                             item.content = toMarkdown(result["rss"]["channel"][0]["item"][0][i][0])
 
@@ -187,7 +190,7 @@ class wpParser {
                 //     { post_tag: 'fett', name: 'Fett' },
                 //     { post_tag: 'omega-6', name: 'Omega-6 Fett' } ] ]
                 item.content = "Cleared for debug purposes"
-                console.log(item)
+                console.log(JSON.stringify(item))
                 //console.dir(result["rss"]["channel"][0]["item"][0])
             });
     }

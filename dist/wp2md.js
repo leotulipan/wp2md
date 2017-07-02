@@ -93,6 +93,7 @@ var wpParser = (function () {
             tagNameProcessors: [this.stripWPPrefix]
         }, function (err, result) {
             var item = {};
+            item.taxonomies = [];
             for (var _i = 0, _a = parser.WHAT2SAVE['item']; _i < _a.length; _i++) {
                 var i = _a[_i];
                 // for (let i of ["category"]) {
@@ -100,12 +101,13 @@ var wpParser = (function () {
                 if (result["rss"]["channel"][0]["item"][0][i]) {
                     // console.log("Processing: " + i)
                     if (i === "category") {
-                        // item.push(result["rss"]["channel"][0]["item"][0][i].map((value) => {
-                        //     return {
-                        //         [value['$']['domain']]: value['$']['nicename'],
-                        //         name: value['_'],
-                        //     }
-                        // }))
+                        item.taxonomies = result["rss"]["channel"][0]["item"][0][i].map(function (current_tag) {
+                            return {
+                                type: current_tag.$.domain,
+                                name: current_tag._,
+                                nice_name: current_tag.$.nicename
+                            };
+                        });
                     }
                     else if (i === "content") {
                         item.content = toMarkdown(result["rss"]["channel"][0]["item"][0][i][0]);
@@ -130,7 +132,7 @@ var wpParser = (function () {
             //     { post_tag: 'fett', name: 'Fett' },
             //     { post_tag: 'omega-6', name: 'Omega-6 Fett' } ] ]
             item.content = "Cleared for debug purposes";
-            console.log(item);
+            console.log(JSON.stringify(item));
             //console.dir(result["rss"]["channel"][0]["item"][0])
         });
     };
@@ -139,3 +141,4 @@ var wpParser = (function () {
 var xmlFile = fs.readFileSync('test.xml', 'utf8');
 var parser = new wpParser(xmlFile);
 parser.parse2js();
+//# sourceMappingURL=wp2md.js.map

@@ -100,10 +100,9 @@ var wpParser = (function () {
             item.taxonomies = [];
             for (var _i = 0, _a = parser.WHAT2SAVE['item']; _i < _a.length; _i++) {
                 var i = _a[_i];
-                // for (let i of ["category"]) {
-                // only if not undefined, as some elements may not exist on all items
                 if (result["rss"]["channel"][0]["item"][0][i]) {
-                    // console.log("Processing: " + i)
+                    if (DEBUG)
+                        console.log("Processing: " + i);
                     if (i === "category") {
                         item.taxonomies = result["rss"]["channel"][0]["item"][0][i].map(function (current_tag) {
                             return {
@@ -121,8 +120,7 @@ var wpParser = (function () {
                     }
                 }
             }
-            if (DEBUG)
-                item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>";
+            // if (DEBUG) item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
             // Sort function syntax via
             // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
             // added custom sort function
@@ -145,8 +143,14 @@ var wpParser = (function () {
                 };
                 return sortOrder[n1] - sortOrder[n2];
             }).reduce(function (r, k) { return (r[k] = item[k], r); }, {});
+            var content = item.content;
+            delete item.content;
+            var markdownItem;
+            markdownItem = YAML.stringify(item);
+            markdownItem += "---\n";
+            markdownItem += toMarkdown(content);
             if (DEBUG)
-                console.log(YAML.stringify(item));
+                console.log(markdownItem);
         });
     };
     return wpParser;

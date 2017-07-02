@@ -146,10 +146,8 @@ class wpParser {
                 item.taxonomies = []
 
                 for (let i of parser.WHAT2SAVE['item']) {
-                    // for (let i of ["category"]) {
-                    // only if not undefined, as some elements may not exist on all items
                     if (result["rss"]["channel"][0]["item"][0][i]) {
-                        // console.log("Processing: " + i)
+                        if (DEBUG) console.log("Processing: " + i)
                         if (i === "category") {
                             item.taxonomies = result["rss"]["channel"][0]["item"][0][i].map((current_tag) => {
                                 return <WpNamespace.wpTaxonomy > {
@@ -167,7 +165,7 @@ class wpParser {
                     }
                 }
 
-                if (DEBUG) item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
+                // if (DEBUG) item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
 
                 // Sort function syntax via
                 // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
@@ -192,7 +190,14 @@ class wpParser {
                     return sortOrder[n1] - sortOrder[n2]
                 }).reduce((r, k) => (r[k] = item[k], r), {})
 
-                if (DEBUG) console.log(YAML.stringify(item))
+                let content = item.content
+                delete item.content
+                let markdownItem: string
+                markdownItem = YAML.stringify(item)
+                markdownItem += "---\n"
+                markdownItem += toMarkdown(content)
+
+                if (DEBUG) console.log(markdownItem)
             });
     }
 }

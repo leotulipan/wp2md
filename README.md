@@ -1,6 +1,7 @@
 # WordPress to Markdown Exporter (Typescript version)
 
 Based on idea of https://github.com/dreikanter/wp2md
+Adding relevant info to a [frontmatter section](https://jekyllrb.com/docs/frontmatter/)
 
 # Current state: early ALPHA
 
@@ -8,14 +9,12 @@ I am still playing around with the code and copying the working features from wp
 
 # Next Steps
 
-- json2yaml the front matter 
-    - final format https://jekyllrb.com/docs/frontmatter/
-    - npm  https://www.npmjs.com/package/json2yaml
-    - online converter https://www.json2yaml.com/
-- loop through all items
+- loop through all/multiple items
+- output items to files
+- Get Channel data ("def dump_channel" in the python module => index.md) 
+- output index (channel) to file
 - [Command Line Arguments and Interface](https://github.com/vilic/clime)
 - Take Filename, output & date arguments
-- Get Channel data ("def dump_channel" in the python module => index.md) 
 - throw error when more than one channel
 - make debugging work in vcode https://stackoverflow.com/questions/31169259/how-to-debug-typescript-files-in-visual-studio-code
 

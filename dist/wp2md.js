@@ -4,6 +4,7 @@ var DEBUG = true;
 // https://stackoverflow.com/questions/37260901/how-to-find-module-fs-in-ms-code-with-typescript
 // npm install "@types/node" --save-dev
 var fs = require("fs");
+var URL = require("url");
 var toMarkdown = require("to-markdown");
 var YAML = require("json2yaml");
 var wpParser = (function () {
@@ -113,14 +114,20 @@ var wpParser = (function () {
                         });
                     }
                     else if (i === "content") {
-                        item.content = toMarkdown(result["rss"]["channel"][0]["item"][0][i][0]);
+                        if (DEBUG)
+                            item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>";
+                        else
+                            item.content = toMarkdown(result["rss"]["channel"][0]["item"][0][i][0]);
+                    }
+                    else if (i === "link") {
+                        item[i] = result["rss"]["channel"][0]["item"][0][i][0];
+                        item.permalink = URL.parse(item.link).pathname;
                     }
                     else {
                         item[i] = result["rss"]["channel"][0]["item"][0][i][0];
                     }
                 }
             }
-            // if (DEBUG) item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
             // Sort function syntax via
             // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
             // added custom sort function
@@ -139,7 +146,7 @@ var wpParser = (function () {
                     is_sticky: 10,
                     excerpt: 11,
                     taxonomies: 12,
-                    content: 13
+                    content: 13,
                 };
                 return sortOrder[n1] - sortOrder[n2];
             }).reduce(function (r, k) { return (r[k] = item[k], r); }, {});

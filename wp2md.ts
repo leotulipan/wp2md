@@ -3,6 +3,7 @@ var DEBUG: boolean = true
 // https://stackoverflow.com/questions/37260901/how-to-find-module-fs-in-ms-code-with-typescript
 // npm install "@types/node" --save-dev
 import * as fs from "fs"
+import * as URL from "url";
 import * as toMarkdown from "to-markdown"
 import * as YAML from "json2yaml"
 
@@ -21,6 +22,7 @@ declare module WpNamespace {
     export interface wpItem {
         title ? : string;
         link ? : string;
+        permalink ? : string; // # we will generate this from the link
         creator ? : string;
         post_id ? : number;
         post_date ? : string;
@@ -157,15 +159,19 @@ class wpParser {
                                 }
                             })
                         } else if (i === "content") {
-                            item.content = toMarkdown(result["rss"]["channel"][0]["item"][0][i][0])
+                            if (DEBUG)
+                                item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
+                            else
+                                item.content = toMarkdown(result["rss"]["channel"][0]["item"][0][i][0])
 
+                        } else if (i === "link") {
+                            item[i] = result["rss"]["channel"][0]["item"][0][i][0]
+                            item.permalink = URL.parse(item.link).pathname
                         } else {
                             item[i] = result["rss"]["channel"][0]["item"][0][i][0]
                         }
                     }
                 }
-
-                // if (DEBUG) item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
 
                 // Sort function syntax via
                 // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
@@ -185,7 +191,8 @@ class wpParser {
                         is_sticky: 10,
                         excerpt: 11,
                         taxonomies: 12,
-                        content: 13
+                        content: 13,
+
                     }
                     return sortOrder[n1] - sortOrder[n2]
                 }).reduce((r, k) => (r[k] = item[k], r), {})

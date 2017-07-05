@@ -9,6 +9,7 @@ I am still playing around with the code and copying the working features from wp
 
 # Next Steps
 
+- 2 yaml list "categories:" & "tags:" with just the nicenames
 - loop through all/multiple items
 - output items to files
 - Get Channel data ("def dump_channel" in the python module => index.md) 

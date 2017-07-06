@@ -63,6 +63,21 @@ var wpParser = (function () {
             'post_date_gmt': 'created_gmt',
         };
     }
+    wpParser.prototype.convertTaxonomy = function (taxonomy, typeofTaxonomy) {
+        if (typeofTaxonomy === void 0) { typeofTaxonomy = "category"; }
+        if (DEBUG)
+            console.log("Converting: " + typeofTaxonomy);
+        var converted = [];
+        Array.prototype.filter.call(taxonomy, function (t) {
+            if (t.type === typeofTaxonomy) {
+                converted.push(t.nice_name);
+                return true;
+            }
+        });
+        if (DEBUG)
+            console.log(converted);
+        return converted;
+    };
     /**
      * removes prefix or postfix
      * prefixes: wp: or dc:
@@ -92,6 +107,7 @@ var wpParser = (function () {
      * and outputs to json
      */
     wpParser.prototype.parse2js = function () {
+        var _this = this;
         // https://github.com/Leonidas-from-XIV/node-xml2js
         var parseString = require('xml2js').parseString;
         parseString(this.xmlFile, {
@@ -141,7 +157,7 @@ var wpParser = (function () {
                     post_date: 5,
                     post_type: 6,
                     status: 7,
-                    comment_status: 8,
+                    commerent_status: 8,
                     post_parent: 9,
                     is_sticky: 10,
                     excerpt: 11,
@@ -150,6 +166,9 @@ var wpParser = (function () {
                 };
                 return sortOrder[n1] - sortOrder[n2];
             }).reduce(function (r, k) { return (r[k] = item[k], r); }, {});
+            item.categories = _this.convertTaxonomy(item.taxonomies);
+            item.tags = _this.convertTaxonomy(item.taxonomies, "post_tag");
+            // content moved to its own variable, away from frontmatter
             var content = item.content;
             delete item.content;
             var markdownItem;

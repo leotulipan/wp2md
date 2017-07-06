@@ -11,15 +11,15 @@ import * as YAML from "json2yaml"
  * Interface for the frontmatter object/json
  *  generated with http://json2ts.com/
  */
-declare module WpNamespace {
+declare module WordpressNamespace {
 
-    export interface wpTaxonomy {
+    export interface WordpressTaxonomy {
         type ? : string;
         nice_name ? : string;
         name ? : string;
     }
 
-    export interface wpItem {
+    export interface WordpressItem {
         title ? : string;
         link ? : string;
         permalink ? : string; // # we will generate this from the link
@@ -34,7 +34,9 @@ declare module WpNamespace {
         is_sticky ? : number;
         excerpt ? : string;
         content ? : string;
-        taxonomies ? : wpTaxonomy[];
+        taxonomies ? : WordpressTaxonomy[];
+        categories ? : string[];
+        tags ? : string[];
     }
 
 }
@@ -108,6 +110,20 @@ class wpParser {
 
     }
 
+    convertTaxonomy(taxonomy: WordpressNamespace.WordpressTaxonomy,
+        typeofTaxonomy: string = "category"): string[] {
+        if (DEBUG) console.log("Converting: " + typeofTaxonomy)
+        var converted = []
+        Array.prototype.filter.call(taxonomy, (t) => {
+            if (t.type === typeofTaxonomy) {
+                converted.push(t.nice_name)
+                return true
+            }
+        })
+        if (DEBUG) console.log(converted)
+        return converted
+    }
+
     /**
      * removes prefix or postfix
      * prefixes: wp: or dc:
@@ -144,7 +160,7 @@ class wpParser {
                 tagNameProcessors: [this.stripWPPrefix]
             },
             (err, result) => {
-                var item: WpNamespace.wpItem = {}
+                var item: WordpressNamespace.WordpressItem = {}
                 item.taxonomies = []
 
                 for (let i of parser.WHAT2SAVE['item']) {
@@ -152,7 +168,7 @@ class wpParser {
                         if (DEBUG) console.log("Processing: " + i)
                         if (i === "category") {
                             item.taxonomies = result["rss"]["channel"][0]["item"][0][i].map((current_tag) => {
-                                return <WpNamespace.wpTaxonomy > {
+                                return <WordpressNamespace.WordpressTaxonomy > {
                                     type: current_tag.$.domain,
                                     name: current_tag._,
                                     nice_name: current_tag.$.nicename
@@ -186,7 +202,7 @@ class wpParser {
                         post_date: 5,
                         post_type: 6,
                         status: 7,
-                        comment_status: 8,
+                        commerent_status: 8,
                         post_parent: 9,
                         is_sticky: 10,
                         excerpt: 11,
@@ -197,8 +213,13 @@ class wpParser {
                     return sortOrder[n1] - sortOrder[n2]
                 }).reduce((r, k) => (r[k] = item[k], r), {})
 
+                item.categories = this.convertTaxonomy(item.taxonomies)
+                item.tags = this.convertTaxonomy(item.taxonomies, "post_tag")
+
+                // content moved to its own variable, away from frontmatter
                 let content = item.content
                 delete item.content
+
                 let markdownItem: string
                 markdownItem = YAML.stringify(item)
                 markdownItem += "---\n"

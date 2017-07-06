@@ -49,9 +49,9 @@ test with:
     ssh -T git@github.com
     (Note: even though putty above works this still throws an erros)
 
-4. Set upstream: 
+4. Set upstream:
 
-    git branch -u github/master
+   git branch -u github/master
 
 We created the repo locally and created one remotely
 

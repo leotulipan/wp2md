@@ -25,9 +25,20 @@ I am still playing around with the code and copying the working features from wp
 
 1. Add openssh Key to git https://github.com/settings/keys
 2. [SSH to Server via GUI to get around "Store key in cache?" error](https://stackoverflow.com/questions/33240137/git-clone-pull-continually-freezing-at-store-key-in-cache)
+    - Start Putty
+    - Connect to git@github.com
+    - Do *never* close window on exit
+    - You get:
+´´´
+Using username "git".
+Authenticating with public key "passphrase: XYZ SSH" from agent
+Server refused to allocate pty
+Hi USERNAME! You've successfully authenticated, but GitHub does not provide shell access.
+´´´    
+    
 3. Set the env Var GIT_SSH:
 
-    export GIT_SSH="C:\Program Files (x86)\PuTTY\plink.exe"
+    export GIT_SSH="C:\Program Files\PuTTY\plink.exe"
 
 or in Powershell:
 
@@ -36,6 +47,7 @@ or in Powershell:
 test with: 
 
     ssh -T git@github.com
+    (Note even though putty above works this still throws an erros)
 
 4. Set upstream: 
 

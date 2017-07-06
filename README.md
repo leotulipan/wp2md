@@ -29,25 +29,25 @@ I am still playing around with the code and copying the working features from wp
     - Connect to git@github.com
     - Do *never* close window on exit
     - You get:
-´´´
+```
 Using username "git".
 Authenticating with public key "passphrase: XYZ SSH" from agent
 Server refused to allocate pty
 Hi USERNAME! You've successfully authenticated, but GitHub does not provide shell access.
-´´´    
+```    
     
 3. Set the env Var GIT_SSH:
 
     export GIT_SSH="C:\Program Files\PuTTY\plink.exe"
+    Powershell:  [Environment]::SetEnvironmentVariable("GIT_SSH", "C:\Program Files\PuTTY\plink.exe", "User")
 
-or in Powershell:
-
-    [Environment]::SetEnvironmentVariable("GIT_SSH", "C:\Program Files (x86)\PuTTY\plink.exe", "User")
+    to have this [permanent](http://www.cgranade.com/blog/2016/06/06/ssh-keys-in-vscode.html):
+    Right-click on `My Computer` or `This PC` in Windows/File Explorer, and select `Properties`. From there, click `Advanced system settings` in the sidebar to the left. On the Advanced tab, press the `Environment Variables...` button at the bottom. Finally, click `New...` on the user variables pane (top), and add a new variable named **GIT_SSH** with the value
 
 test with: 
 
     ssh -T git@github.com
-    (Note even though putty above works this still throws an erros)
+    (Note: even though putty above works this still throws an erros)
 
 4. Set upstream: 
 

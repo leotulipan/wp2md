@@ -113,6 +113,7 @@ class wpParser {
     convertTaxonomy(taxonomy: WordpressNamespace.WordpressTaxonomy,
         typeofTaxonomy: string = "category"): string[] {
         if (DEBUG) console.log("Converting: " + typeofTaxonomy)
+
         var converted = []
         Array.prototype.filter.call(taxonomy, (t) => {
             if (t.type === typeofTaxonomy) {
@@ -121,7 +122,10 @@ class wpParser {
             }
         })
         if (DEBUG) console.log(converted)
-        return converted
+        if (converted.length === 0)
+            return undefined
+        else
+            return converted
     }
 
     /**
@@ -160,72 +164,87 @@ class wpParser {
                 tagNameProcessors: [this.stripWPPrefix]
             },
             (err, result) => {
-                var item: WordpressNamespace.WordpressItem = {}
-                item.taxonomies = []
+                var items: string[] = []
+                var item: WordpressNamespace.WordpressItem
 
-                for (let i of parser.WHAT2SAVE['item']) {
-                    if (result["rss"]["channel"][0]["item"][0][i]) {
-                        if (DEBUG) console.log("Processing: " + i)
-                        if (i === "category") {
-                            item.taxonomies = result["rss"]["channel"][0]["item"][0][i].map((current_tag) => {
-                                return <WordpressNamespace.WordpressTaxonomy > {
-                                    type: current_tag.$.domain,
-                                    name: current_tag._,
-                                    nice_name: current_tag.$.nicename
-                                }
-                            })
-                        } else if (i === "content") {
-                            if (DEBUG)
-                                item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
-                            else
-                                item.content = toMarkdown(result["rss"]["channel"][0]["item"][0][i][0])
-
-                        } else if (i === "link") {
-                            item[i] = result["rss"]["channel"][0]["item"][0][i][0]
-                            item.permalink = URL.parse(item.link).pathname
-                        } else {
-                            item[i] = result["rss"]["channel"][0]["item"][0][i][0]
-                        }
-                    }
+                var channels = Object.keys(result["rss"]["channel"]).length
+                if (DEBUG) console.log("Number of channels: " + channels)
+                if (channels > 1) {
+                    console.log("More than one channel is currently not supported")
+                    return false
                 }
 
-                // Sort function syntax via
-                // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
-                // added custom sort function
-                item = Object.keys(item).sort((n1, n2) => {
-                    let sortOrder = {
-                        title: 0,
-                        post_name: 1,
-                        post_id: 2,
-                        link: 3,
-                        creator: 4,
-                        post_date: 5,
-                        post_type: 6,
-                        status: 7,
-                        commerent_status: 8,
-                        post_parent: 9,
-                        is_sticky: 10,
-                        excerpt: 11,
-                        taxonomies: 12,
-                        content: 13,
+                var numberOfItems = Object.keys(result["rss"]["channel"][0]["item"]).length
+                if (DEBUG) console.log("Number of items: " + numberOfItems)
 
+                for (let xmlitem of result["rss"]["channel"][0]["item"]) {
+                    item = {}
+                    item.taxonomies = []
+
+                    for (let i of parser.WHAT2SAVE['item']) {
+
+                        if (xmlitem[i]) {
+                            if (DEBUG) console.log("Processing: " + i)
+                            if (i === "category") {
+                                item.taxonomies = xmlitem[i].map((current_tag) => {
+                                    return <WordpressNamespace.WordpressTaxonomy > {
+                                        type: current_tag.$.domain,
+                                        name: current_tag._,
+                                        nice_name: current_tag.$.nicename
+                                    }
+                                })
+                            } else if (i === "content") {
+                                if (DEBUG)
+                                    item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
+                                else
+                                    item.content = toMarkdown(xmlitem[i][0])
+
+                            } else if (i === "link") {
+                                item[i] = xmlitem[i][0]
+                                item.permalink = URL.parse(item.link).pathname
+                            } else {
+                                item[i] = xmlitem[i][0]
+                            }
+                        }
                     }
-                    return sortOrder[n1] - sortOrder[n2]
-                }).reduce((r, k) => (r[k] = item[k], r), {})
 
-                item.categories = this.convertTaxonomy(item.taxonomies)
-                item.tags = this.convertTaxonomy(item.taxonomies, "post_tag")
+                    // Sort function syntax via
+                    // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
+                    // added custom sort function
+                    item = Object.keys(item).sort((n1, n2) => {
+                        let sortOrder = {
+                            title: 0,
+                            post_name: 1,
+                            post_id: 2,
+                            link: 3,
+                            creator: 4,
+                            post_date: 5,
+                            post_type: 6,
+                            status: 7,
+                            commerent_status: 8,
+                            post_parent: 9,
+                            is_sticky: 10,
+                            excerpt: 11,
+                            taxonomies: 12,
+                            content: 13,
+                        }
+                        return sortOrder[n1] - sortOrder[n2]
+                    }).reduce((r, k) => (r[k] = item[k], r), {})
 
-                // content moved to its own variable, away from frontmatter
-                let content = item.content
-                delete item.content
+                    item.categories = this.convertTaxonomy(item.taxonomies)
+                    item.tags = this.convertTaxonomy(item.taxonomies, "post_tag")
 
-                let markdownItem: string
-                markdownItem = YAML.stringify(item)
-                markdownItem += "---\n"
-                markdownItem += toMarkdown(content)
+                    // content moved to its own variable, away from frontmatter
+                    let content = item.content
+                    delete item.content
 
-                if (DEBUG) console.log(markdownItem)
+                    // let markdownItem: string
+                    items.push(YAML.stringify(item) + "---\n" + toMarkdown(content))
+
+                    // if (DEBUG) console.log(markdownItem)
+                    // if (DEBUG) console.log(item.permalink)
+                } // end xmlitem loop
+                if (DEBUG) console.dir(items)
             });
     }
 }

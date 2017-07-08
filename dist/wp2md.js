@@ -76,7 +76,10 @@ var wpParser = (function () {
         });
         if (DEBUG)
             console.log(converted);
-        return converted;
+        if (converted.length === 0)
+            return undefined;
+        else
+            return converted;
     };
     /**
      * removes prefix or postfix
@@ -113,70 +116,85 @@ var wpParser = (function () {
         parseString(this.xmlFile, {
             tagNameProcessors: [this.stripWPPrefix]
         }, function (err, result) {
-            var item = {};
-            item.taxonomies = [];
-            for (var _i = 0, _a = parser.WHAT2SAVE['item']; _i < _a.length; _i++) {
-                var i = _a[_i];
-                if (result["rss"]["channel"][0]["item"][0][i]) {
-                    if (DEBUG)
-                        console.log("Processing: " + i);
-                    if (i === "category") {
-                        item.taxonomies = result["rss"]["channel"][0]["item"][0][i].map(function (current_tag) {
-                            return {
-                                type: current_tag.$.domain,
-                                name: current_tag._,
-                                nice_name: current_tag.$.nicename
-                            };
-                        });
-                    }
-                    else if (i === "content") {
+            var items = [];
+            var item;
+            var channels = Object.keys(result["rss"]["channel"]).length;
+            if (DEBUG)
+                console.log("Number of channels: " + channels);
+            if (channels > 1) {
+                console.log("More than one channel is currently not supported");
+                return false;
+            }
+            var numberOfItems = Object.keys(result["rss"]["channel"][0]["item"]).length;
+            if (DEBUG)
+                console.log("Number of items: " + numberOfItems);
+            for (var _i = 0, _a = result["rss"]["channel"][0]["item"]; _i < _a.length; _i++) {
+                var xmlitem = _a[_i];
+                item = {};
+                item.taxonomies = [];
+                for (var _b = 0, _c = parser.WHAT2SAVE['item']; _b < _c.length; _b++) {
+                    var i = _c[_b];
+                    if (xmlitem[i]) {
                         if (DEBUG)
-                            item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>";
-                        else
-                            item.content = toMarkdown(result["rss"]["channel"][0]["item"][0][i][0]);
-                    }
-                    else if (i === "link") {
-                        item[i] = result["rss"]["channel"][0]["item"][0][i][0];
-                        item.permalink = URL.parse(item.link).pathname;
-                    }
-                    else {
-                        item[i] = result["rss"]["channel"][0]["item"][0][i][0];
+                            console.log("Processing: " + i);
+                        if (i === "category") {
+                            item.taxonomies = xmlitem[i].map(function (current_tag) {
+                                return {
+                                    type: current_tag.$.domain,
+                                    name: current_tag._,
+                                    nice_name: current_tag.$.nicename
+                                };
+                            });
+                        }
+                        else if (i === "content") {
+                            if (DEBUG)
+                                item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>";
+                            else
+                                item.content = toMarkdown(xmlitem[i][0]);
+                        }
+                        else if (i === "link") {
+                            item[i] = xmlitem[i][0];
+                            item.permalink = URL.parse(item.link).pathname;
+                        }
+                        else {
+                            item[i] = xmlitem[i][0];
+                        }
                     }
                 }
-            }
-            // Sort function syntax via
-            // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
-            // added custom sort function
-            item = Object.keys(item).sort(function (n1, n2) {
-                var sortOrder = {
-                    title: 0,
-                    post_name: 1,
-                    post_id: 2,
-                    link: 3,
-                    creator: 4,
-                    post_date: 5,
-                    post_type: 6,
-                    status: 7,
-                    commerent_status: 8,
-                    post_parent: 9,
-                    is_sticky: 10,
-                    excerpt: 11,
-                    taxonomies: 12,
-                    content: 13,
-                };
-                return sortOrder[n1] - sortOrder[n2];
-            }).reduce(function (r, k) { return (r[k] = item[k], r); }, {});
-            item.categories = _this.convertTaxonomy(item.taxonomies);
-            item.tags = _this.convertTaxonomy(item.taxonomies, "post_tag");
-            // content moved to its own variable, away from frontmatter
-            var content = item.content;
-            delete item.content;
-            var markdownItem;
-            markdownItem = YAML.stringify(item);
-            markdownItem += "---\n";
-            markdownItem += toMarkdown(content);
+                // Sort function syntax via
+                // https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
+                // added custom sort function
+                item = Object.keys(item).sort(function (n1, n2) {
+                    var sortOrder = {
+                        title: 0,
+                        post_name: 1,
+                        post_id: 2,
+                        link: 3,
+                        creator: 4,
+                        post_date: 5,
+                        post_type: 6,
+                        status: 7,
+                        commerent_status: 8,
+                        post_parent: 9,
+                        is_sticky: 10,
+                        excerpt: 11,
+                        taxonomies: 12,
+                        content: 13,
+                    };
+                    return sortOrder[n1] - sortOrder[n2];
+                }).reduce(function (r, k) { return (r[k] = item[k], r); }, {});
+                item.categories = _this.convertTaxonomy(item.taxonomies);
+                item.tags = _this.convertTaxonomy(item.taxonomies, "post_tag");
+                // content moved to its own variable, away from frontmatter
+                var content = item.content;
+                delete item.content;
+                // let markdownItem: string
+                items.push(YAML.stringify(item) + "---\n" + toMarkdown(content));
+                // if (DEBUG) console.log(markdownItem)
+                // if (DEBUG) console.log(item.permalink)
+            } // end xmlitem loop
             if (DEBUG)
-                console.log(markdownItem);
+                console.dir(items);
         });
     };
     return wpParser;

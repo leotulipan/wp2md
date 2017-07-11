@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "Wordpress XML to Markdown Typescript",
   "main": "wp2md.ts",
-  "dependencies": {},
+  "dependencies": {
+    "yargs": "^8.0.2"
+  },
   "devDependencies": {
     "@types/node": "^7.0.13",
     "json2yaml": "^1.1.0",

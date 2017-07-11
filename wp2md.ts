@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var DEBUG: boolean = true
 
 // https://stackoverflow.com/questions/37260901/how-to-find-module-fs-in-ms-code-with-typescript
@@ -6,6 +8,7 @@ import * as fs from "fs"
 import * as URL from "url";
 import * as toMarkdown from "to-markdown"
 import * as YAML from "json2yaml"
+import * as yargs from "yargs"
 
 /**
  * Interface for the frontmatter object/json
@@ -41,62 +44,66 @@ declare module WordpressNamespace {
 
 }
 
+/**
+ * XML elements to save
+ */
+let WHAT2SAVE: object = {
+    'channel': [
+        'title',
+        'description',
+        'author_display_name',
+        'author_login',
+        'author_email',
+        'base_site_url',
+        'base_blog_url',
+        'export_date', //# Generated: data export timestamp
+        'content', //# Generated: items list
+        // # 'link',
+        // # 'language',
+    ],
+    'item': [
+        'title',
+        'link',
+        'category', //# we want multiple <category domain="post_tag"
+        'comments', //# Generated: comments list
+        'creator',
+        'post_id',
+        'post_date',
+        'comment_status',
+        'post_name',
+        'status',
+        'post_type',
+        'post_parent',
+        'is_sticky',
+        'excerpt',
+        'content',
+        // 'description', // seems to always be empty 
+        // # 'guid',
+        // # 'menu_order',
+        // # 'ping_status',
+        // # 'post_password',
+    ],
+    'comment': [
+        'comment_id',
+        'comment_author',
+        'comment_author_email',
+        'comment_author_url',
+        'comment_author_IP',
+        'comment_date',
+        'comment_date_gmt',
+        'comment_content',
+        'comment_approved',
+        'comment_type',
+        // # 'comment_parent',
+        // # 'comment_user_id',
+    ],
+}
+
+/**
+ * 
+ */
 class wpParser {
 
-    /**
-     * XML elements to save
-     */
-    WHAT2SAVE: object = {
-        'channel': [
-            'title',
-            'description',
-            'author_display_name',
-            'author_login',
-            'author_email',
-            'base_site_url',
-            'base_blog_url',
-            'export_date', //# Generated: data export timestamp
-            'content', //# Generated: items list
-            // # 'link',
-            // # 'language',
-        ],
-        'item': [
-            'title',
-            'link',
-            'category', //# we want multiple <category domain="post_tag"
-            'comments', //# Generated: comments list
-            'creator',
-            'post_id',
-            'post_date',
-            'comment_status',
-            'post_name',
-            'status',
-            'post_type',
-            'post_parent',
-            'is_sticky',
-            'excerpt',
-            'content',
-            // 'description', // seems to always be empty 
-            // # 'guid',
-            // # 'menu_order',
-            // # 'ping_status',
-            // # 'post_password',
-        ],
-        'comment': [
-            'comment_id',
-            'comment_author',
-            'comment_author_email',
-            'comment_author_url',
-            'comment_author_IP',
-            'comment_date',
-            'comment_date_gmt',
-            'comment_content',
-            'comment_approved',
-            'comment_type',
-            // # 'comment_parent',
-            // # 'comment_user_id',
-        ],
-    }
 
     // Wordpress RSS items to public - static page header fields mapping
     //(undefined names will remain unchanged)
@@ -181,7 +188,7 @@ class wpParser {
                     item = {}
                     item.taxonomies = []
 
-                    for (let i of parser.WHAT2SAVE['item']) {
+                    for (let i of WHAT2SAVE['item']) {
 
                         if (xmlitem[i]) {
                             if (DEBUG) console.log("Processing: " + i)
@@ -248,8 +255,33 @@ class wpParser {
             });
     }
 }
+let cmdArgs = yargs.
+option('file', {
+    alias: "f",
+    describe: 'the xml file output from WordPress'
+}).
+option('output', {
+    alias: "o",
+    describe: 'default directory name: "filename" without extension'
+}).
+usage("Usage: $0 -f [filename.xml]").
+demandOption(['f']).
+help().
+argv
 
-let xmlFile = fs.readFileSync('test.xml', 'utf8')
-let parser = new wpParser(xmlFile)
+if (DEBUG) console.log("Filename: " + cmdArgs.file)
+fs.stat(cmdArgs.file, (err, stats) => {
+    if (err != null) {
+        console.log("Trying to open file \"" + cmdArgs.file + "\" gave error: " + err)
+    } else {
+        // let xmlFile = fs.readFileSync(cmdArgs.file, 'utf8')
+        // let parser = new wpParser(xmlFile)
+        // parser.parse2js()
 
-parser.parse2js()
+        fs.readFile(cmdArgs.file, 'utf8', (err, data) => {
+            let parser = new wpParser(data)
+            parser.parse2js()
+        })
+    }
+
+})

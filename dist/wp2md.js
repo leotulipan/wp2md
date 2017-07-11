@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var DEBUG = true;
@@ -7,54 +8,58 @@ var fs = require("fs");
 var URL = require("url");
 var toMarkdown = require("to-markdown");
 var YAML = require("json2yaml");
+var yargs = require("yargs");
+/**
+ * XML elements to save
+ */
+var WHAT2SAVE = {
+    'channel': [
+        'title',
+        'description',
+        'author_display_name',
+        'author_login',
+        'author_email',
+        'base_site_url',
+        'base_blog_url',
+        'export_date',
+        'content',
+    ],
+    'item': [
+        'title',
+        'link',
+        'category',
+        'comments',
+        'creator',
+        'post_id',
+        'post_date',
+        'comment_status',
+        'post_name',
+        'status',
+        'post_type',
+        'post_parent',
+        'is_sticky',
+        'excerpt',
+        'content',
+    ],
+    'comment': [
+        'comment_id',
+        'comment_author',
+        'comment_author_email',
+        'comment_author_url',
+        'comment_author_IP',
+        'comment_date',
+        'comment_date_gmt',
+        'comment_content',
+        'comment_approved',
+        'comment_type',
+    ],
+};
+/**
+ *
+ */
 var wpParser = (function () {
     function wpParser(xmlFile) {
         this.xmlFile = xmlFile;
-        /**
-         * XML elements to save
-         */
-        this.WHAT2SAVE = {
-            'channel': [
-                'title',
-                'description',
-                'author_display_name',
-                'author_login',
-                'author_email',
-                'base_site_url',
-                'base_blog_url',
-                'export_date',
-                'content',
-            ],
-            'item': [
-                'title',
-                'link',
-                'category',
-                'comments',
-                'creator',
-                'post_id',
-                'post_date',
-                'comment_status',
-                'post_name',
-                'status',
-                'post_type',
-                'post_parent',
-                'is_sticky',
-                'excerpt',
-                'content',
-            ],
-            'comment': [
-                'comment_id',
-                'comment_author',
-                'comment_author_email',
-                'comment_author_url',
-                'comment_author_IP',
-                'comment_date',
-                'comment_date_gmt',
-                'comment_content',
-                'comment_approved',
-                'comment_type',
-            ],
-        };
         // Wordpress RSS items to public - static page header fields mapping
         //(undefined names will remain unchanged)
         this.FIELD_MAP = {
@@ -132,7 +137,7 @@ var wpParser = (function () {
                 var xmlitem = _a[_i];
                 item = {};
                 item.taxonomies = [];
-                for (var _b = 0, _c = parser.WHAT2SAVE['item']; _b < _c.length; _b++) {
+                for (var _b = 0, _c = WHAT2SAVE['item']; _b < _c.length; _b++) {
                     var i = _c[_b];
                     if (xmlitem[i]) {
                         if (DEBUG)
@@ -199,7 +204,33 @@ var wpParser = (function () {
     };
     return wpParser;
 }());
-var xmlFile = fs.readFileSync('test.xml', 'utf8');
-var parser = new wpParser(xmlFile);
-parser.parse2js();
+var cmdArgs = yargs.
+    option('file', {
+    alias: "f",
+    describe: 'the xml file output from WordPress'
+}).
+    option('output', {
+    alias: "o",
+    describe: 'default directory name: "filename" without extension'
+}).
+    usage("Usage: $0 -f [filename.xml]").
+    demandOption(['f']).
+    help().
+    argv;
+if (DEBUG)
+    console.log("Filename: " + cmdArgs.file);
+fs.stat(cmdArgs.file, function (err, stats) {
+    if (err != null) {
+        console.log("Trying to open file \"" + cmdArgs.file + "\" gave error: " + err);
+    }
+    else {
+        // let xmlFile = fs.readFileSync(cmdArgs.file, 'utf8')
+        // let parser = new wpParser(xmlFile)
+        // parser.parse2js()
+        fs.readFile(cmdArgs.file, 'utf8', function (err, data) {
+            var parser = new wpParser(data);
+            parser.parse2js();
+        });
+    }
+});
 //# sourceMappingURL=wp2md.js.map

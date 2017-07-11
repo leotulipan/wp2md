@@ -269,6 +269,13 @@ demandOption(['f']).
 help().
 argv
 
+
+let outDir = cmdArgs.output
+if (outDir === undefined) {
+    outDir = cmdArgs.file.replace(/\.[^/.]+$/, "")
+    if (DEBUG) console.log("Ouput Dir: " + outDir)
+}
+
 if (DEBUG) console.log("Filename: " + cmdArgs.file)
 fs.stat(cmdArgs.file, (err, stats) => {
     if (err != null) {

@@ -9,14 +9,14 @@ I am still playing around with the code and copying the working features from wp
 
 # Next Steps
 
-- loop through all/multiple items
-- output items to files
+- output items to [dir](https://nodejs.org/api/fs.html#fs_fs_mkdir_path_mode_callback) and single files.md
 - Get Channel data ("def dump_channel" in the python module => index.md) 
 - output index (channel) to file
-- [Command Line Arguments and Interface](https://github.com/vilic/clime)
-- Take Filename, output & date arguments
+- Take date arguments
 - throw error when more than one channel
 - make debugging work in vcode https://stackoverflow.com/questions/31169259/how-to-debug-typescript-files-in-visual-studio-code
+- Maybe? Refactor js yargs to [Command Line Arguments and Interface](https://github.com/vilic/clime)
+- test cases / test xml files provided in repo
 
 # Setup 
 

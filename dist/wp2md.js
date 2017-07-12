@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var DEBUG = true;
 // https://stackoverflow.com/questions/37260901/how-to-find-module-fs-in-ms-code-with-typescript
@@ -67,6 +68,7 @@ var wpParser = (function () {
             'post_date': 'created',
             'post_date_gmt': 'created_gmt',
         };
+        this.items = [];
     }
     wpParser.prototype.convertTaxonomy = function (taxonomy, typeofTaxonomy) {
         if (typeofTaxonomy === void 0) { typeofTaxonomy = "category"; }
@@ -121,7 +123,6 @@ var wpParser = (function () {
         parseString(this.xmlFile, {
             tagNameProcessors: [this.stripWPPrefix]
         }, function (err, result) {
-            var items = [];
             var item;
             var channels = Object.keys(result["rss"]["channel"]).length;
             if (DEBUG)
@@ -194,12 +195,12 @@ var wpParser = (function () {
                 var content = item.content;
                 delete item.content;
                 // let markdownItem: string
-                items.push(YAML.stringify(item) + "---\n" + toMarkdown(content));
+                _this.items.push(YAML.stringify(item) + "---\n" + toMarkdown(content));
                 // if (DEBUG) console.log(markdownItem)
                 // if (DEBUG) console.log(item.permalink)
-            } // end xmlitem loop
+            } // end xmlitem loop  
             if (DEBUG)
-                console.dir(items);
+                console.dir(_this.items);
         });
     };
     return wpParser;
@@ -230,12 +231,21 @@ fs.stat(cmdArgs.file, function (err, stats) {
         console.log("Trying to open file \"" + cmdArgs.file + "\" gave error: " + err);
     }
     else {
-        // let xmlFile = fs.readFileSync(cmdArgs.file, 'utf8')
-        // let parser = new wpParser(xmlFile)
-        // parser.parse2js()
         fs.readFile(cmdArgs.file, 'utf8', function (err, data) {
             var parser = new wpParser(data);
             parser.parse2js();
+            // work in this here
+            // this.items is undefined at this stage as we are outside the parser object. we need to bring
+            // these file functions into the parser 
+            if (DEBUG)
+                console.dir(_this.items);
+            fs.mkdir(outDir, function (err) {
+                fs.access(outDir, fs.constants.W_OK, function (err) {
+                    // we can write to the dir (no err)
+                    if (!err) {
+                    }
+                });
+            });
         });
     }
 });

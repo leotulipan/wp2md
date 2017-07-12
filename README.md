@@ -1,6 +1,6 @@
 # WordPress to Markdown Exporter (Typescript version)
 
-Based on idea of https://github.com/dreikanter/wp2md
+Based on the idea of [wp2md](https://github.com/dreikanter/wp2md)
 Adding relevant info to a [frontmatter section](https://jekyllrb.com/docs/frontmatter/)
 
 # Current state: early ALPHA
@@ -9,6 +9,7 @@ I am still playing around with the code and copying the working features from wp
 
 # Next Steps
 
+- bring file functions into parser class /rename parser class. access to this.items must work everywhere
 - output items to [dir](https://nodejs.org/api/fs.html#fs_fs_mkdir_path_mode_callback) and single files.md
 - Get Channel data ("def dump_channel" in the python module => index.md) 
 - output index (channel) to file

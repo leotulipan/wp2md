@@ -104,6 +104,7 @@ let WHAT2SAVE: object = {
  */
 class wpParser {
 
+    items: string[]
 
     // Wordpress RSS items to public - static page header fields mapping
     //(undefined names will remain unchanged)
@@ -114,10 +115,10 @@ class wpParser {
     }
 
     constructor(private xmlFile: string) {
-
+        this.items = []
     }
 
-    convertTaxonomy(taxonomy: WordpressNamespace.WordpressTaxonomy,
+    convertTaxonomy(taxonomy: WordpressNamespace.WordpressTaxonomy[],
         typeofTaxonomy: string = "category"): string[] {
         if (DEBUG) console.log("Converting: " + typeofTaxonomy)
 
@@ -171,7 +172,7 @@ class wpParser {
                 tagNameProcessors: [this.stripWPPrefix]
             },
             (err, result) => {
-                var items: string[] = []
+
                 var item: WordpressNamespace.WordpressItem
 
                 var channels = Object.keys(result["rss"]["channel"]).length
@@ -246,12 +247,12 @@ class wpParser {
                     delete item.content
 
                     // let markdownItem: string
-                    items.push(YAML.stringify(item) + "---\n" + toMarkdown(content))
+                    this.items.push(YAML.stringify(item) + "---\n" + toMarkdown(content))
 
                     // if (DEBUG) console.log(markdownItem)
                     // if (DEBUG) console.log(item.permalink)
-                } // end xmlitem loop
-                if (DEBUG) console.dir(items)
+                } // end xmlitem loop  
+                if (DEBUG) console.dir(this.items)
             });
     }
 }
@@ -281,13 +282,24 @@ fs.stat(cmdArgs.file, (err, stats) => {
     if (err != null) {
         console.log("Trying to open file \"" + cmdArgs.file + "\" gave error: " + err)
     } else {
-        // let xmlFile = fs.readFileSync(cmdArgs.file, 'utf8')
-        // let parser = new wpParser(xmlFile)
-        // parser.parse2js()
-
         fs.readFile(cmdArgs.file, 'utf8', (err, data) => {
+
             let parser = new wpParser(data)
             parser.parse2js()
+
+            // work in this here
+            // this.items is undefined at this stage as we are outside the parser object. we need to bring
+            // these file functions into the parser 
+            if (DEBUG) console.dir(this.items)
+
+            fs.mkdir(outDir, (err) => {
+                fs.access(outDir, fs.constants.W_OK, (err) => {
+                    // we can write to the dir (no err)
+                    if (!err) {
+
+                    }
+                })
+            })
         })
     }
 

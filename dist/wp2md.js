@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 "use strict";
-var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-var DEBUG = true;
-// https://stackoverflow.com/questions/37260901/how-to-find-module-fs-in-ms-code-with-typescript
-// npm install "@types/node" --save-dev
 var fs = require("fs");
 var URL = require("url");
 var toMarkdown = require("to-markdown");
 var YAML = require("json2yaml");
 var yargs = require("yargs");
+// DEBUG mode if DEBUG = true you get additional console.log output
+var DEBUG = true;
 /**
  * XML elements to save
  */
@@ -57,6 +55,8 @@ var WHAT2SAVE = {
 };
 /**
  *
+ *
+ * @class wpParser
  */
 var wpParser = (function () {
     function wpParser(xmlFile) {
@@ -68,8 +68,27 @@ var wpParser = (function () {
             'post_date': 'created',
             'post_date_gmt': 'created_gmt',
         };
-        this.items = [];
+        this._items = [];
     }
+    Object.defineProperty(wpParser.prototype, "items", {
+        get: function () {
+            return this._items;
+        },
+        set: function (value) {
+            this._items = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    wpParser.prototype.addItem = function (singleItem) {
+        this._items.push(singleItem);
+    };
+    wpParser.prototype.getItem = function (index) {
+        return this._items[index];
+    };
+    wpParser.prototype.getItemLength = function () {
+        return this._items.length;
+    };
     wpParser.prototype.convertTaxonomy = function (taxonomy, typeofTaxonomy) {
         if (typeofTaxonomy === void 0) { typeofTaxonomy = "category"; }
         if (DEBUG)
@@ -154,7 +173,8 @@ var wpParser = (function () {
                         }
                         else if (i === "content") {
                             if (DEBUG)
-                                item.content = "<h1>Debug</h1>Cleared for better <strong>readability</strong>";
+                                item.content =
+                                    "<h1>Debug</h1>Cleared for better <strong>readability</strong>";
                             else
                                 item.content = toMarkdown(xmlitem[i][0]);
                         }
@@ -195,16 +215,21 @@ var wpParser = (function () {
                 var content = item.content;
                 delete item.content;
                 // let markdownItem: string
-                _this.items.push(YAML.stringify(item) + "---\n" + toMarkdown(content));
+                _this._items.push(YAML.stringify(item) + "---\n" +
+                    toMarkdown(content));
                 // if (DEBUG) console.log(markdownItem)
                 // if (DEBUG) console.log(item.permalink)
             } // end xmlitem loop  
             if (DEBUG)
-                console.dir(_this.items);
+                console.dir(_this._items);
         });
     };
     return wpParser;
 }());
+exports.wpParser = wpParser;
+/**
+ * Main
+ */
 var cmdArgs = yargs.
     option('file', {
     alias: "f",
@@ -228,21 +253,22 @@ if (DEBUG)
     console.log("Filename: " + cmdArgs.file);
 fs.stat(cmdArgs.file, function (err, stats) {
     if (err != null) {
-        console.log("Trying to open file \"" + cmdArgs.file + "\" gave error: " + err);
+        console.log("Trying to open file \"" + cmdArgs.file +
+            "\" gave error: " + err);
     }
     else {
         fs.readFile(cmdArgs.file, 'utf8', function (err, data) {
             var parser = new wpParser(data);
             parser.parse2js();
-            // work in this here
-            // this.items is undefined at this stage as we are outside the parser object. we need to bring
-            // these file functions into the parser 
             if (DEBUG)
-                console.dir(_this.items);
+                console.log("First Item: Character Lenght");
+            if (DEBUG)
+                console.dir(parser.getItem(0).length);
             fs.mkdir(outDir, function (err) {
                 fs.access(outDir, fs.constants.W_OK, function (err) {
                     // we can write to the dir (no err)
                     if (!err) {
+                        // Access items with parser.getItem and parser.getItemLength
                     }
                 });
             });

@@ -10,6 +10,8 @@ I am still playing around with the code and copying the working features from wp
 # Next Steps
 
 - bring file functions into parser class /rename parser class. access to this.items must work everywhere
+- refactor WPNamespace + Class into one nested odule https://stackoverflow.com/questions/13495107/any-way-to-declare-a-nest-class-structure-in-typescript
+- refactor interface/getter/setter parser._items
 - output items to [dir](https://nodejs.org/api/fs.html#fs_fs_mkdir_path_mode_callback) and single files.md
 - Get Channel data ("def dump_channel" in the python module => index.md) 
 - output index (channel) to file

@@ -119,13 +119,13 @@ let WHAT2SAVE: object = {
  */
 export class wpParser {
 
-  // work on this next: setter/getter for array
-  //    Refactor with interface next:
-  //  https://stackoverflow.com/questions/25469244/how-can-i-define-an-interface-for-an-array-of-objects-with-typescript
+  // Refactor with interface next:
+  //  array setter/getter for array
+  // https://stackoverflow.com/questions/25469244/how-can-i-define-an-interface-for-an-array-of-objects-with-typescript
   // https://visualstudiomagazine.com/articles/2016/01/01/exploiting-typescript-arrays.aspx
-  private _items: Array < string >
+  private _items: Array < WordpressNamespace.WordpressItem >
 
-    get items(): Array < string > {
+    get items(): Array < WordpressNamespace.WordpressItem > {
       return this._items
     }
 
@@ -173,6 +173,16 @@ export class wpParser {
       return undefined
     else
       return converted
+  }
+
+  item2YAML(item: WordpressNamespace.WordpressItem) {
+
+    // content moved to its own variable, away from frontmatter
+    let content = item.content
+    delete item.content
+
+    return YAML.stringify(item) + "---\n" +
+      toMarkdown(content)
   }
 
   /**
@@ -286,16 +296,8 @@ export class wpParser {
           item.tags = this.convertTaxonomy(item.taxonomies,
             "post_tag")
 
-          // content moved to its own variable, away from frontmatter
-          let content = item.content
-          delete item.content
+          this.addItem(item)
 
-          // let markdownItem: string
-          this._items.push(YAML.stringify(item) + "---\n" +
-            toMarkdown(content))
-
-          // if (DEBUG) console.log(markdownItem)
-          // if (DEBUG) console.log(item.permalink)
         } // end xmlitem loop  
         if(DEBUG) console.dir(this._items)
       });
@@ -336,13 +338,21 @@ fs.stat(cmdArgs.file, (err, stats) => {
       let parser = new wpParser(data)
       parser.parse2js()
 
-      if(DEBUG) console.log("First Item: Character Lenght")
-      if(DEBUG) console.dir(parser.getItem(0).length)
+      // if(DEBUG) console.log("First Item: Character Lenght")
+      //  HOW TO CAST AS STRING TO GET THE LENGTH?
+      //  if(DEBUG) console.dir( String.prototype.length.call(parser.item2YAML(parser.getItem(0)) ) 
 
       fs.mkdir(outDir, (err) => {
         fs.access(outDir, fs.constants.W_OK, (err) => {
           // we can write to the dir (no err)
           if(!err) {
+
+            for(let item of parser.items) {
+              if(DEBUG) console.log("Saving " + item.permalink)
+              let stringItem = parser.item2YAML(item)
+              // NOW SAVE THIS
+
+            }
 
             // Access items with parser.getItem and parser.getItemLength
 

@@ -107,6 +107,13 @@ var wpParser = (function () {
         else
             return converted;
     };
+    wpParser.prototype.item2YAML = function (item) {
+        // content moved to its own variable, away from frontmatter
+        var content = item.content;
+        delete item.content;
+        return YAML.stringify(item) + "---\n" +
+            toMarkdown(content);
+    };
     /**
      * removes prefix or postfix
      * prefixes: wp: or dc:
@@ -211,14 +218,7 @@ var wpParser = (function () {
                 }).reduce(function (r, k) { return (r[k] = item[k], r); }, {});
                 item.categories = _this.convertTaxonomy(item.taxonomies);
                 item.tags = _this.convertTaxonomy(item.taxonomies, "post_tag");
-                // content moved to its own variable, away from frontmatter
-                var content = item.content;
-                delete item.content;
-                // let markdownItem: string
-                _this._items.push(YAML.stringify(item) + "---\n" +
-                    toMarkdown(content));
-                // if (DEBUG) console.log(markdownItem)
-                // if (DEBUG) console.log(item.permalink)
+                _this.addItem(item);
             } // end xmlitem loop  
             if (DEBUG)
                 console.dir(_this._items);
@@ -260,14 +260,20 @@ fs.stat(cmdArgs.file, function (err, stats) {
         fs.readFile(cmdArgs.file, 'utf8', function (err, data) {
             var parser = new wpParser(data);
             parser.parse2js();
-            if (DEBUG)
-                console.log("First Item: Character Lenght");
-            if (DEBUG)
-                console.dir(parser.getItem(0).length);
+            // if(DEBUG) console.log("First Item: Character Lenght")
+            //  HOW TO CAST AS STRING TO GET THE LENGTH?
+            //  if(DEBUG) console.dir( String.prototype.length.call(parser.item2YAML(parser.getItem(0)) ) 
             fs.mkdir(outDir, function (err) {
                 fs.access(outDir, fs.constants.W_OK, function (err) {
                     // we can write to the dir (no err)
                     if (!err) {
+                        for (var _i = 0, _a = parser.items; _i < _a.length; _i++) {
+                            var item = _a[_i];
+                            if (DEBUG)
+                                console.log("Saving " + item.permalink);
+                            var stringItem = parser.item2YAML(item);
+                            // NOW SAVE THIS
+                        }
                         // Access items with parser.getItem and parser.getItemLength
                     }
                 });

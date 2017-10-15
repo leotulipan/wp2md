@@ -9,8 +9,8 @@ I am still playing around with the code and copying the working features from wp
 
 # Next Steps
 
-- save stringItem as file
-- refactor WPNamespace + Class into one nested odule https://stackoverflow.com/questions/13495107/any-way-to-declare-a-nest-class-structure-in-typescript
+- save stringItem as file (line 356)
+- refactor WPNamespace + Class into one nested module https://stackoverflow.com/questions/13495107/any-way-to-declare-a-nest-class-structure-in-typescript
 - refactor interface/getter/setter parser._items
 - output items to [dir](https://nodejs.org/api/fs.html#fs_fs_mkdir_path_mode_callback) and single files.md
 - Get Channel data ("def dump_channel" in the python module => index.md) 

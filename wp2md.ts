@@ -123,11 +123,11 @@ export class wpParser {
   //  array setter/getter for array
   // https://stackoverflow.com/questions/25469244/how-can-i-define-an-interface-for-an-array-of-objects-with-typescript
   // https://visualstudiomagazine.com/articles/2016/01/01/exploiting-typescript-arrays.aspx
-  private _items: Array < WordpressNamespace.WordpressItem >
+  private _items: Array < WordpressNamespace.WordpressItem > ;
 
-    get items(): Array < WordpressNamespace.WordpressItem > {
-      return this._items
-    }
+  get items(): Array < WordpressNamespace.WordpressItem > {
+    return this._items
+  }
 
   set items(value) {
     this._items = value
@@ -243,7 +243,7 @@ export class wpParser {
           for(let i of WHAT2SAVE['item']) {
 
             if(xmlitem[i]) {
-              if(DEBUG) console.log("Processing: " + i)
+              // if(DEBUG) console.log("Processing: " + i)
               if(i === "category") {
                 item.taxonomies = xmlitem[i].map((current_tag) => {
                   return <WordpressNamespace.WordpressTaxonomy >
@@ -299,7 +299,7 @@ export class wpParser {
           this.addItem(item)
 
         } // end xmlitem loop  
-        if(DEBUG) console.dir(this._items)
+        if(DEBUG) console.log("No. of items: " + this.getItemLength())
       });
   }
 }
@@ -307,59 +307,66 @@ export class wpParser {
 /**
  * Main
  */
-let cmdArgs = yargs.
-option('file', {
-  alias: "f",
-  describe: 'the xml file output from WordPress'
-}).
-option('output', {
-  alias: "o",
-  describe: 'default directory name: "filename" without extension'
-}).
-usage("Usage: $0 -f [filename.xml]").
-demandOption(['f']).
-help().
-argv
+function main() {
+  let cmdArgs = yargs.
+  option('file', {
+    alias: "f",
+    describe: 'the xml file output from WordPress'
+  }).
+  option('output', {
+    alias: "o",
+    describe: 'default directory name: "filename" without extension'
+  }).
+  usage("Usage: $0 -f [filename.xml]").
+  demandOption(['f']).
+  help().
+  argv
 
-let outDir = cmdArgs.output
-if(outDir === undefined) {
-  outDir = cmdArgs.file.replace(/\.[^/.]+$/, "")
-  if(DEBUG) console.log("Ouput Dir: " + outDir)
-}
-
-if(DEBUG) console.log("Filename: " + cmdArgs.file)
-fs.stat(cmdArgs.file, (err, stats) => {
-  if(err != null) {
-    console.log("Trying to open file \"" + cmdArgs.file +
-      "\" gave error: " + err)
-  } else {
-    fs.readFile(cmdArgs.file, 'utf8', (err, data) => {
-
-      let parser = new wpParser(data)
-      parser.parse2js()
-
-      // if(DEBUG) console.log("First Item: Character Lenght")
-      //  HOW TO CAST AS STRING TO GET THE LENGTH?
-      //  if(DEBUG) console.dir( String.prototype.length.call(parser.item2YAML(parser.getItem(0)) ) 
-
-      fs.mkdir(outDir, (err) => {
-        fs.access(outDir, fs.constants.W_OK, (err) => {
-          // we can write to the dir (no err)
-          if(!err) {
-
-            for(let item of parser.items) {
-              if(DEBUG) console.log("Saving " + item.permalink)
-              let stringItem = parser.item2YAML(item)
-              // NOW SAVE THIS
-
-            }
-
-            // Access items with parser.getItem and parser.getItemLength
-
-          }
-        })
-      })
-    })
+  let outDir = cmdArgs.output
+  if(outDir === undefined) {
+    outDir = cmdArgs.file.replace(/\.[^/.]+$/, "")
+    if(DEBUG) console.log("Ouput Dir: " + outDir)
   }
 
-})
+  if(DEBUG) console.log("Filename: " + cmdArgs.file)
+  fs.stat(cmdArgs.file, (err, stats) => {
+    if(err != null) {
+      console.log("Trying to open file \"" + cmdArgs.file +
+        "\" gave error: " + err)
+    } else {
+      fs.readFile(cmdArgs.file, 'utf8', (err, data) => {
+
+        let parser = new wpParser(data)
+        parser.parse2js()
+
+        // if(DEBUG) console.log("First Item: Character Lenght")
+        //  HOW TO CAST AS STRING TO GET THE LENGTH?
+        //  if(DEBUG) console.dir( String.prototype.length.call(parser.item2YAML(parser.getItem(0)) ) 
+
+        fs.mkdir(outDir, (err) => {
+          fs.access(outDir, fs.constants.W_OK, (err) => {
+            // we can write to the dir (no err)
+            if(!err) {
+
+              for(let item of parser.items) {
+                if(DEBUG) console.log("Saving " +
+                  item.permalink)
+                let stringItem = parser.item2YAML(
+                  item)
+                // NOW SAVE THIS
+
+              }
+
+              // Access items with parser.getItem and parser.getItemLength
+
+            }
+          })
+        })
+      })
+    }
+
+  })
+
+}
+
+main()

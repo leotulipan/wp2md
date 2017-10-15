@@ -167,8 +167,7 @@ var wpParser = (function () {
                 for (var _b = 0, _c = WHAT2SAVE['item']; _b < _c.length; _b++) {
                     var i = _c[_b];
                     if (xmlitem[i]) {
-                        if (DEBUG)
-                            console.log("Processing: " + i);
+                        // if(DEBUG) console.log("Processing: " + i)
                         if (i === "category") {
                             item.taxonomies = xmlitem[i].map(function (current_tag) {
                                 return {
@@ -221,7 +220,7 @@ var wpParser = (function () {
                 _this.addItem(item);
             } // end xmlitem loop  
             if (DEBUG)
-                console.dir(_this._items);
+                console.log("No. of items: " + _this.getItemLength());
         });
     };
     return wpParser;
@@ -230,55 +229,59 @@ exports.wpParser = wpParser;
 /**
  * Main
  */
-var cmdArgs = yargs.
-    option('file', {
-    alias: "f",
-    describe: 'the xml file output from WordPress'
-}).
-    option('output', {
-    alias: "o",
-    describe: 'default directory name: "filename" without extension'
-}).
-    usage("Usage: $0 -f [filename.xml]").
-    demandOption(['f']).
-    help().
-    argv;
-var outDir = cmdArgs.output;
-if (outDir === undefined) {
-    outDir = cmdArgs.file.replace(/\.[^/.]+$/, "");
-    if (DEBUG)
-        console.log("Ouput Dir: " + outDir);
-}
-if (DEBUG)
-    console.log("Filename: " + cmdArgs.file);
-fs.stat(cmdArgs.file, function (err, stats) {
-    if (err != null) {
-        console.log("Trying to open file \"" + cmdArgs.file +
-            "\" gave error: " + err);
+function main() {
+    var cmdArgs = yargs.
+        option('file', {
+        alias: "f",
+        describe: 'the xml file output from WordPress'
+    }).
+        option('output', {
+        alias: "o",
+        describe: 'default directory name: "filename" without extension'
+    }).
+        usage("Usage: $0 -f [filename.xml]").
+        demandOption(['f']).
+        help().
+        argv;
+    var outDir = cmdArgs.output;
+    if (outDir === undefined) {
+        outDir = cmdArgs.file.replace(/\.[^/.]+$/, "");
+        if (DEBUG)
+            console.log("Ouput Dir: " + outDir);
     }
-    else {
-        fs.readFile(cmdArgs.file, 'utf8', function (err, data) {
-            var parser = new wpParser(data);
-            parser.parse2js();
-            // if(DEBUG) console.log("First Item: Character Lenght")
-            //  HOW TO CAST AS STRING TO GET THE LENGTH?
-            //  if(DEBUG) console.dir( String.prototype.length.call(parser.item2YAML(parser.getItem(0)) ) 
-            fs.mkdir(outDir, function (err) {
-                fs.access(outDir, fs.constants.W_OK, function (err) {
-                    // we can write to the dir (no err)
-                    if (!err) {
-                        for (var _i = 0, _a = parser.items; _i < _a.length; _i++) {
-                            var item = _a[_i];
-                            if (DEBUG)
-                                console.log("Saving " + item.permalink);
-                            var stringItem = parser.item2YAML(item);
-                            // NOW SAVE THIS
+    if (DEBUG)
+        console.log("Filename: " + cmdArgs.file);
+    fs.stat(cmdArgs.file, function (err, stats) {
+        if (err != null) {
+            console.log("Trying to open file \"" + cmdArgs.file +
+                "\" gave error: " + err);
+        }
+        else {
+            fs.readFile(cmdArgs.file, 'utf8', function (err, data) {
+                var parser = new wpParser(data);
+                parser.parse2js();
+                // if(DEBUG) console.log("First Item: Character Lenght")
+                //  HOW TO CAST AS STRING TO GET THE LENGTH?
+                //  if(DEBUG) console.dir( String.prototype.length.call(parser.item2YAML(parser.getItem(0)) ) 
+                fs.mkdir(outDir, function (err) {
+                    fs.access(outDir, fs.constants.W_OK, function (err) {
+                        // we can write to the dir (no err)
+                        if (!err) {
+                            for (var _i = 0, _a = parser.items; _i < _a.length; _i++) {
+                                var item = _a[_i];
+                                if (DEBUG)
+                                    console.log("Saving " +
+                                        item.permalink);
+                                var stringItem = parser.item2YAML(item);
+                                // NOW SAVE THIS
+                            }
+                            // Access items with parser.getItem and parser.getItemLength
                         }
-                        // Access items with parser.getItem and parser.getItemLength
-                    }
+                    });
                 });
             });
-        });
-    }
-});
+        }
+    });
+}
+main();
 //# sourceMappingURL=wp2md.js.map

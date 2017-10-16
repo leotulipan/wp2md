@@ -227,6 +227,20 @@ var wpParser = (function () {
 }());
 exports.wpParser = wpParser;
 /**
+ *
+ *
+ * @param {string} filename
+ * @param {string} content
+ */
+function saveFile(filename, content) {
+    if (DEBUG)
+        console.log("Saving file: " + filename);
+    // fs.mkdir(outDir, (err) => {
+    //   fs.access(outDir, fs.constants.W_OK, (err) => {
+    //     // we can write to the dir (no err)
+    //     if(!err) {
+}
+/**
  * Main
  */
 function main() {
@@ -269,11 +283,9 @@ function main() {
                         if (!err) {
                             for (var _i = 0, _a = parser.items; _i < _a.length; _i++) {
                                 var item = _a[_i];
-                                if (DEBUG)
-                                    console.log("Saving " +
-                                        item.permalink);
                                 var stringItem = parser.item2YAML(item);
-                                // NOW SAVE THIS
+                                saveFile(outDir + "/" + item.post_name +
+                                    ".md", stringItem);
                             }
                             // Access items with parser.getItem and parser.getItemLength
                         }

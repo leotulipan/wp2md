@@ -311,11 +311,15 @@ export class wpParser {
  * @param {string} content 
  */
 function saveFile(filename: string, content: string) {
-  if(DEBUG) console.log("Saving file: " + filename)
-  // fs.mkdir(outDir, (err) => {
-  //   fs.access(outDir, fs.constants.W_OK, (err) => {
-  //     // we can write to the dir (no err)
-  //     if(!err) {
+  // options <Object> | <string>
+  // encoding <string> | <null> Default: 'utf8'
+  // mode <integer> Default: 0o666
+  // flag <string> Default: 'w'
+  fs.writeFile(filename, content, err => {
+    if(err) throw err;
+    if(DEBUG) console.log("saved file: " + filename)
+  })
+
 }
 
 /**
@@ -359,15 +363,13 @@ function main() {
 
         fs.mkdir(outDir, (err) => {
           fs.access(outDir, fs.constants.W_OK, (err) => {
-            // we can write to the dir (no err)
-            if(!err) {
+            if(err) throw err;
 
-              for(let item of parser.items) {
-                let stringItem = parser.item2YAML(
-                  item)
-                saveFile(outDir + "/" + item.post_name +
-                  ".md", stringItem)
-              }
+            for(let item of parser.items) {
+              let stringItem = parser.item2YAML(
+                item)
+              saveFile(outDir + "/" + item.post_name +
+                ".md", stringItem)
 
               // Access items with parser.getItem and parser.getItemLength
 

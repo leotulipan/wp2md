@@ -233,12 +233,16 @@ exports.wpParser = wpParser;
  * @param {string} content
  */
 function saveFile(filename, content) {
-    if (DEBUG)
-        console.log("Saving file: " + filename);
-    // fs.mkdir(outDir, (err) => {
-    //   fs.access(outDir, fs.constants.W_OK, (err) => {
-    //     // we can write to the dir (no err)
-    //     if(!err) {
+    // options <Object> | <string>
+    // encoding <string> | <null> Default: 'utf8'
+    // mode <integer> Default: 0o666
+    // flag <string> Default: 'w'
+    fs.writeFile(filename, content, function (err) {
+        if (err)
+            throw err;
+        if (DEBUG)
+            console.log("saved file: " + filename);
+    });
 }
 /**
  * Main
@@ -279,14 +283,13 @@ function main() {
                 //  if(DEBUG) console.dir( String.prototype.length.call(parser.item2YAML(parser.getItem(0)) ) 
                 fs.mkdir(outDir, function (err) {
                     fs.access(outDir, fs.constants.W_OK, function (err) {
-                        // we can write to the dir (no err)
-                        if (!err) {
-                            for (var _i = 0, _a = parser.items; _i < _a.length; _i++) {
-                                var item = _a[_i];
-                                var stringItem = parser.item2YAML(item);
-                                saveFile(outDir + "/" + item.post_name +
-                                    ".md", stringItem);
-                            }
+                        if (err)
+                            throw err;
+                        for (var _i = 0, _a = parser.items; _i < _a.length; _i++) {
+                            var item = _a[_i];
+                            var stringItem = parser.item2YAML(item);
+                            saveFile(outDir + "/" + item.post_name +
+                                ".md", stringItem);
                             // Access items with parser.getItem and parser.getItemLength
                         }
                     });

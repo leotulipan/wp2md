@@ -7,7 +7,7 @@ var toMarkdown = require("to-markdown");
 var YAML = require("json2yaml");
 var yargs = require("yargs");
 // DEBUG mode if DEBUG = true you get additional console.log output
-var DEBUG = true;
+var DEBUG = false;
 /**
  * XML elements to save
  */

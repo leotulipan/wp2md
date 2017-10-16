@@ -9,14 +9,13 @@ I am still playing around with the code and copying the working features from wp
 
 # Next Steps
 
-- save stringItem as file (line 356)
-- refactor WPNamespace + Class into one nested module https://stackoverflow.com/questions/13495107/any-way-to-declare-a-nest-class-structure-in-typescript
-- refactor interface/getter/setter parser._items
-- output items to [dir](https://nodejs.org/api/fs.html#fs_fs_mkdir_path_mode_callback) and single files.md
 - Get Channel data ("def dump_channel" in the python module => index.md) 
-- output index (channel) to file
-- Take date arguments
+    line 464 z:\OneDrive\Projekt WP2MD\wp2md\wp2md.py
 - throw error when more than one channel
+- output index (channel) to file
+- refactor interface/getter/setter parser._items
+- refactor WPNamespace + Class into one nested module https://stackoverflow.com/questions/13495107/any-way-to-declare-a-nest-class-structure-in-typescript
+- Take date arguments
 - make debugging work in vcode https://stackoverflow.com/questions/31169259/how-to-debug-typescript-files-in-visual-studio-code
 - Maybe? Refactor js yargs to [Command Line Arguments and Interface](https://github.com/vilic/clime)
 - test cases / test xml files provided in repo

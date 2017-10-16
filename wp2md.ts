@@ -9,7 +9,7 @@ import * as YAML from "json2yaml"
 import * as yargs from "yargs"
 
 // DEBUG mode if DEBUG = true you get additional console.log output
-var DEBUG: boolean = true
+var DEBUG: boolean = false
 
 /**
  * Interface for the frontmatter object/json

@@ -245,6 +245,32 @@ function saveFile(filename, content) {
     });
 }
 /**
+ * Get Channel data => index.md
+ * based on "def dump_channel" in the python module
+ *  line 464 wp2md.py
+ */
+function saveChannelData(directory) {
+    var index = "index content";
+    // def dump_channel(meta, items):
+    // """Dumps RSS channel metadata and items index."""
+    // file_name = get_path('page', 'index.md')
+    // log.info("Dumping index to '%s'" % file_name)
+    // fields = WHAT2SAVE['channel']
+    // meta = {field: meta.get(field, None) for field in fields}
+    // # Append export_date
+    // pub_date = meta.get('pubDate', None)
+    // format = conf['parse_date_fmt']
+    // meta['export_date'] = parse_date(pub_date, format, time.gmtime())
+    // # Append table of contents
+    // meta['content'] = generate_toc(meta, items)
+    fs.writeFile(directory + "/index.md", index, function (err) {
+        if (err)
+            throw err;
+        if (DEBUG)
+            console.log("saved channel index.md file");
+    });
+}
+/**
  * Main
  */
 function main() {
@@ -285,6 +311,7 @@ function main() {
                     fs.access(outDir, fs.constants.W_OK, function (err) {
                         if (err)
                             throw err;
+                        saveChannelData(outDir);
                         for (var _i = 0, _a = parser.items; _i < _a.length; _i++) {
                             var item = _a[_i];
                             var stringItem = parser.item2YAML(item);

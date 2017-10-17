@@ -11,8 +11,9 @@ I am still playing around with the code and copying the working features from wp
 
 - Get Channel data ("def dump_channel" in the python module => index.md) 
     line 464 z:\OneDrive\Projekt WP2MD\wp2md\wp2md.py
-- throw error when more than one channel
 - output index (channel) to file
+- throw error when more than one channel
+- calling "-f test" w/o extension: crash => auto-add xml
 - refactor interface/getter/setter parser._items
 - refactor WPNamespace + Class into one nested module https://stackoverflow.com/questions/13495107/any-way-to-declare-a-nest-class-structure-in-typescript
 - Take date arguments

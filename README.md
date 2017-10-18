@@ -14,6 +14,11 @@ I am still playing around with the code and copying the working features from wp
 - output index (channel) to file
 - throw error when more than one channel
 - calling "-f test" w/o extension: crash => auto-add xml
+- create a book.txt for leanpub.com
+    one .md file per line
+    sorted e.g. by tags
+    maybe have a e.g. tagname.md file with just a h1 # TAGNAME in between the files
+- add option -c (--clean): check and remove unnessecary (html) content (e.g. theme/builder markup, CTAs like newsletter forms, etc)
 - refactor interface/getter/setter parser._items
 - refactor WPNamespace + Class into one nested module https://stackoverflow.com/questions/13495107/any-way-to-declare-a-nest-class-structure-in-typescript
 - Take date arguments

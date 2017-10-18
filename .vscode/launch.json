@@ -3,5 +3,9 @@
   "request": "launch",
   "name": "Launch in WSL",
   "useWSL": true,
-  "program": "${workspaceFolder}/dist/wp2md.js"
+  "program": "${workspaceFolder}/dist/wp2md.js",
+  "sourceFileMap": {
+    "z:\\OneDrive": "/mnt/z/OneDrive"
+  },
+  "cwd": "/mnt/z/OneDrive/Projekt WP2MD"
 }

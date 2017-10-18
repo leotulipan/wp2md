@@ -9,6 +9,7 @@ I am still playing around with the code and copying the working features from wp
 
 # Next Steps
 
+- [Continue linux WSL setup](https://stackoverflow.com/questions/44450218/how-do-i-use-bash-on-ubuntu-on-windows-wsl-for-my-vs-code-terminal)
 - Get Channel data ("def dump_channel" in the python module => index.md) 
     line 464 z:\OneDrive\Projekt WP2MD\wp2md\wp2md.py
 - output index (channel) to file

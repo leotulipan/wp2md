@@ -24,9 +24,9 @@ declare module WordpressNamespace {
    * @interface WordpressTaxonomy
    */
   export interface WordpressTaxonomy {
-    type ? : string;
-    nice_name ? : string;
-    name ? : string;
+    type?: string;
+    nice_name?: string;
+    name?: string;
   }
 
   /**
@@ -36,23 +36,23 @@ declare module WordpressNamespace {
    * @interface WordpressItem
    */
   export interface WordpressItem {
-    title ? : string;
-    link ? : string;
-    permalink ? : string; // # we will generate this from the link
-    creator ? : string;
-    post_id ? : number;
-    post_date ? : string;
-    comment_status ? : string;
-    post_name ? : string;
-    status ? : string;
-    post_type ? : string;
-    post_parent ? : number;
-    is_sticky ? : number;
-    excerpt ? : string;
-    content ? : string;
-    taxonomies ? : WordpressTaxonomy[];
-    categories ? : string[];
-    tags ? : string[];
+    title?: string;
+    link?: string;
+    permalink?: string; // # we will generate this from the link
+    creator?: string;
+    post_id?: number;
+    post_date?: string;
+    comment_status?: string;
+    post_name?: string;
+    status?: string;
+    post_type?: string;
+    post_parent?: number;
+    is_sticky?: number;
+    excerpt?: string;
+    content?: string;
+    taxonomies?: WordpressTaxonomy[];
+    categories?: string[];
+    tags?: string[];
   }
 
 }
@@ -62,54 +62,54 @@ declare module WordpressNamespace {
  */
 let WHAT2SAVE: object = {
   'channel': [
-        'title',
-        'description',
-        'author_display_name',
-        'author_login',
-        'author_email',
-        'base_site_url',
-        'base_blog_url',
-        'export_date', //# Generated: data export timestamp
-        'content', //# Generated: items list
-        // # 'link',
-        // # 'language',
-    ],
+    'title',
+    'description',
+    'author_display_name',
+    'author_login',
+    'author_email',
+    'base_site_url',
+    'base_blog_url',
+    'export_date', //# Generated: data export timestamp
+    'content', //# Generated: items list
+    // # 'link',
+    // # 'language',
+  ],
   'item': [
-        'title',
-        'link',
-        'category', //# we want multiple <category domain="post_tag"
-        'comments', //# Generated: comments list
-        'creator',
-        'post_id',
-        'post_date',
-        'comment_status',
-        'post_name',
-        'status',
-        'post_type',
-        'post_parent',
-        'is_sticky',
-        'excerpt',
-        'content',
-        // 'description', // seems to always be empty 
-        // # 'guid',
-        // # 'menu_order',
-        // # 'ping_status',
-        // # 'post_password',
-    ],
+    'title',
+    'link',
+    'category', //# we want multiple <category domain="post_tag"
+    'comments', //# Generated: comments list
+    'creator',
+    'post_id',
+    'post_date',
+    'comment_status',
+    'post_name',
+    'status',
+    'post_type',
+    'post_parent',
+    'is_sticky',
+    'excerpt',
+    'content',
+    // 'description', // seems to always be empty 
+    // # 'guid',
+    // # 'menu_order',
+    // # 'ping_status',
+    // # 'post_password',
+  ],
   'comment': [
-        'comment_id',
-        'comment_author',
-        'comment_author_email',
-        'comment_author_url',
-        'comment_author_IP',
-        'comment_date',
-        'comment_date_gmt',
-        'comment_content',
-        'comment_approved',
-        'comment_type',
-        // # 'comment_parent',
-        // # 'comment_user_id',
-    ],
+    'comment_id',
+    'comment_author',
+    'comment_author_email',
+    'comment_author_url',
+    'comment_author_IP',
+    'comment_date',
+    'comment_date_gmt',
+    'comment_content',
+    'comment_approved',
+    'comment_type',
+    // # 'comment_parent',
+    // # 'comment_user_id',
+  ],
 }
 
 /**
@@ -123,9 +123,9 @@ export class wpParser {
   //  array setter/getter for array
   // https://stackoverflow.com/questions/25469244/how-can-i-define-an-interface-for-an-array-of-objects-with-typescript
   // https://visualstudiomagazine.com/articles/2016/01/01/exploiting-typescript-arrays.aspx
-  private _items: Array < WordpressNamespace.WordpressItem > ;
+  private _items: Array<WordpressNamespace.WordpressItem>;
 
-  get items(): Array < WordpressNamespace.WordpressItem > {
+  get items(): Array<WordpressNamespace.WordpressItem> {
     return this._items
   }
 
@@ -159,17 +159,17 @@ export class wpParser {
 
   convertTaxonomy(taxonomy: WordpressNamespace.WordpressTaxonomy[],
     typeofTaxonomy: string = "category"): string[] {
-    if(DEBUG) console.log("Converting: " + typeofTaxonomy)
+    if (DEBUG) console.log("Converting: " + typeofTaxonomy)
 
     var converted = []
     Array.prototype.filter.call(taxonomy, (t) => {
-      if(t.type === typeofTaxonomy) {
+      if (t.type === typeofTaxonomy) {
         converted.push(t.nice_name)
         return true
       }
     })
-    if(DEBUG) console.log(converted)
-    if(converted.length === 0)
+    if (DEBUG) console.log(converted)
+    if (converted.length === 0)
       return undefined
     else
       return converted
@@ -196,10 +196,10 @@ export class wpParser {
    */
   stripWPPrefix(tag: string) {
     let splitTag = tag.split(':')
-    if(splitTag[0] == "wp" || splitTag[0] == "dc") {
+    if (splitTag[0] == "wp" || splitTag[0] == "dc") {
       //  starts with wp: or dc: e.g. dc:creator
       return splitTag[1]
-    } else if(splitTag[1] == "encoded") {
+    } else if (splitTag[1] == "encoded") {
       // ends with :encoded e.g. content:encoded
       return splitTag[0]
     } else {
@@ -218,15 +218,15 @@ export class wpParser {
     let parseString = require('xml2js').parseString
 
     parseString(this.xmlFile, {
-        tagNameProcessors: [this.stripWPPrefix]
-      },
+      tagNameProcessors: [this.stripWPPrefix]
+    },
       (err, result) => {
 
         var item: WordpressNamespace.WordpressItem
 
         var channels = Object.keys(result["rss"]["channel"]).length
-        if(DEBUG) console.log("Number of channels: " + channels)
-        if(channels > 1) {
+        if (DEBUG) console.log("Number of channels: " + channels)
+        if (channels > 1) {
           console.log(
             "More than one channel is currently not supported")
           return false
@@ -234,33 +234,33 @@ export class wpParser {
 
         var numberOfItems = Object.keys(result["rss"]["channel"][
           0]["item"]).length
-        if(DEBUG) console.log("Number of items: " + numberOfItems)
+        if (DEBUG) console.log("Number of items: " + numberOfItems)
 
-        for(let xmlitem of result["rss"]["channel"][0]["item"]) {
+        for (let xmlitem of result["rss"]["channel"][0]["item"]) {
           item = {}
           item.taxonomies = []
 
-          for(let i of WHAT2SAVE['item']) {
+          for (let i of WHAT2SAVE['item']) {
 
-            if(xmlitem[i]) {
+            if (xmlitem[i]) {
               // if(DEBUG) console.log("Processing: " + i)
-              if(i === "category") {
+              if (i === "category") {
                 item.taxonomies = xmlitem[i].map((current_tag) => {
-                  return <WordpressNamespace.WordpressTaxonomy >
+                  return <WordpressNamespace.WordpressTaxonomy>
                     {
                       type: current_tag.$.domain,
                       name: current_tag._,
                       nice_name: current_tag.$.nicename
                     }
                 })
-              } else if(i === "content") {
-                if(DEBUG)
+              } else if (i === "content") {
+                if (DEBUG)
                   item.content =
-                  "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
+                    "<h1>Debug</h1>Cleared for better <strong>readability</strong>"
                 else
                   item.content = toMarkdown(xmlitem[i][0])
 
-              } else if(i === "link") {
+              } else if (i === "link") {
                 item[i] = xmlitem[i][0]
                 item.permalink = URL.parse(item.link).pathname
               } else {
@@ -299,7 +299,7 @@ export class wpParser {
           this.addItem(item)
 
         } // end xmlitem loop  
-        if(DEBUG) console.log("No. of items: " + this.getItemLength())
+        if (DEBUG) console.log("No. of items: " + this.getItemLength())
       });
   }
 }
@@ -316,8 +316,8 @@ function saveFile(filename: string, content: string) {
   // mode <integer> Default: 0o666
   // flag <string> Default: 'w'
   fs.writeFile(filename, content, err => {
-    if(err) throw err;
-    if(DEBUG) console.log("saved file: " + filename)
+    if (err) throw err;
+    if (DEBUG) console.log("saved file: " + filename)
   })
 
 }
@@ -327,13 +327,25 @@ function saveFile(filename: string, content: string) {
  * based on "def dump_channel" in the python module 
  *  line 464 wp2md.py
  */
-function saveChannelData(directory) {
+function saveChannelData(directory, parser: wpParser) {
   let index = "index content"
+  let content: String
   // def dump_channel(meta, items):
   // """Dumps RSS channel metadata and items index."""
   // file_name = get_path('page', 'index.md')
   // log.info("Dumping index to '%s'" % file_name)
   // fields = WHAT2SAVE['channel']
+  // let WHAT2SAVE: object = {
+  //   'channel': [
+  //         'title',
+  //         'description',
+  //         'author_display_name',
+  //         'author_login',
+  //         'author_email', // wp:author_email - CDATA
+  //         'base_site_url',
+  //         'base_blog_url',  // wp:base_blog_url
+  //         'export_date', //# Generated: data export timestamp
+  //         'content', //# Generated: items list
   // meta = {field: meta.get(field, None) for field in fields}
 
   // # Append export_date
@@ -344,9 +356,18 @@ function saveChannelData(directory) {
   // # Append table of contents
   // meta['content'] = generate_toc(meta, items)
 
-  fs.writeFile(directory + "/index.md", index, err => {
-    if(err) throw err;
-    if(DEBUG) console.log("saved channel index.md file")
+  for (let item of parser.items) {
+    let stringItem = parser.item2YAML(
+      item)
+    saveFile(directory + "/" + item.post_name +
+      ".md", stringItem)
+    content = content + "\n[" + item.title + "](" + item.post_name +
+      ".md)"
+  }
+
+  fs.writeFile(directory + "/index.md", index + content, err => {
+    if (err) throw err;
+    if (DEBUG) console.log("saved channel index.md file")
   })
 }
 
@@ -355,28 +376,28 @@ function saveChannelData(directory) {
  */
 function main() {
   let cmdArgs = yargs.
-  option('file', {
-    alias: "f",
-    describe: 'the xml file output from WordPress'
-  }).
-  option('output', {
-    alias: "o",
-    describe: 'default directory name: "filename" without extension'
-  }).
-  usage("Usage: $0 -f [filename.xml]").
-  demandOption(['f']).
-  help().
-  argv
+    option('file', {
+      alias: "f",
+      describe: 'the xml file output from WordPress'
+    }).
+    option('output', {
+      alias: "o",
+      describe: 'default directory name: "filename" without extension'
+    }).
+    usage("Usage: $0 -f [filename.xml]").
+    demandOption(['f']).
+    help().
+    argv
 
   let outDir = cmdArgs.output
-  if(outDir === undefined) {
+  if (outDir === undefined) {
     outDir = cmdArgs.file.replace(/\.[^/.]+$/, "")
-    if(DEBUG) console.log("Ouput Dir: " + outDir)
+    if (DEBUG) console.log("Ouput Dir: " + outDir)
   }
 
-  if(DEBUG) console.log("Filename: " + cmdArgs.file)
+  if (DEBUG) console.log("Filename: " + cmdArgs.file)
   fs.stat(cmdArgs.file, (err, stats) => {
-    if(err != null) {
+    if (err != null) {
       console.log("Trying to open file \"" + cmdArgs.file +
         "\" gave error: " + err)
     } else {
@@ -391,25 +412,19 @@ function main() {
 
         fs.mkdir(outDir, (err) => {
           fs.access(outDir, fs.constants.W_OK, (err) => {
-            if(err) throw err;
+            if (err) throw err;
 
-            saveChannelData(outDir)
+            saveChannelData(outDir, parser)
 
-            for(let item of parser.items) {
-              let stringItem = parser.item2YAML(
-                item)
-              saveFile(outDir + "/" + item.post_name +
-                ".md", stringItem)
+            // Access items with parser.getItem and parser.getItemLength
 
-              // Access items with parser.getItem and parser.getItemLength
-
-            }
+          }
           })
-        })
       })
-    }
+    })
+}
 
-  })
+})
 
 }
 

@@ -9,9 +9,10 @@ I am still playing around with the code and copying the working features from wp
 
 # Next Steps
 
+- Get "tsc" running in WSL
 - [Continue linux WSL setup](https://stackoverflow.com/questions/44450218/how-do-i-use-bash-on-ubuntu-on-windows-wsl-for-my-vs-code-terminal)
-- Get Channel data ("def dump_channel" in the python module => index.md) 
-    line 464 z:\OneDrive\Projekt WP2MD\wp2md\wp2md.py
+- check index adds content on line 368
+- Get Channel data line 330
 - output index (channel) to file
 - throw error when more than one channel
 - calling "-f test" w/o extension: crash => auto-add xml
